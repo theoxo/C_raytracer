@@ -17,7 +17,7 @@ typedef struct Vector3D {
 // Initiliaze values but do not allocate memory
 void Vector3D_init(Vector3D* self, double x, double y, double z) {
     if (self == NULL) {
-        printf("Vector3D_init: self is null.");
+        printf("Vector3D_init: self is null.\n");
         return;
     }
 
@@ -31,7 +31,7 @@ Vector3D* Vector3D_create(double x, double y, double z) {
     Vector3D* vec = (Vector3D*) malloc(sizeof(Vector3D));
 
     if (vec == NULL) {
-        printf("Vector3D_create: malloc failed; out of memory?");
+        printf("Vector3D_create: malloc failed; out of memory?\n");
         return NULL;
     }
 
@@ -50,7 +50,7 @@ double Vector3D_getX(Vector3D* self) {
         return self->x;
     }
 
-    printf("3DVector_getX: passed pointer is null.");
+    printf("3DVector_getX: passed pointer is null.\n");
     return -1;
 }
 
@@ -59,7 +59,7 @@ double Vector3D_getY(Vector3D* self) {
         return self->y;
     }
 
-    printf("3DVector_getY: passed pointer is null.");
+    printf("3DVector_getY: passed pointer is null.\n");
     return -1;
 }
 
@@ -68,14 +68,14 @@ double Vector3D_getZ(Vector3D* self) {
         return self->z;
     }
 
-    printf("3DVector_getZ: passed pointer is null.");
+    printf("3DVector_getZ: passed pointer is null.\n");
     return -1;
 }
 
 // Calculates dot product of vectors a and b
 double Vector3D_dot(Vector3D* a, Vector3D* b) {
     if (a == NULL || b == NULL) {
-        printf("Vector3D_dot:  null reference to parameter.");
+        printf("Vector3D_dot:  null reference to parameter.\n");
         return -1;
     }
 

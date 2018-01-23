@@ -15,7 +15,7 @@ typedef struct QuadraticSolution {
 // Initiliaze values but do not allocate memory
 void QuadraticSolution_init(QuadraticSolution* self, double pos, double neg) {
     if (self == NULL) {
-        printf("QuadraticSolution_init: self is null.");
+        printf("QuadraticSolution_init: self is null.\n");
         return;
     }
 
@@ -28,7 +28,7 @@ QuadraticSolution* QuadraticSolution_create(double pos, double neg) {
     QuadraticSolution* qs = (QuadraticSolution*) malloc(sizeof(QuadraticSolution));
 
     if (vqs == NULL) {
-        printf("QuadraticSolution_create: malloc failed; out of memory?");
+        printf("QuadraticSolution_create: malloc failed; out of memory?\n");
         return NULL;
     }
 
@@ -44,7 +44,7 @@ void QuadraticSolution_destroy(QuadraticSolution* self) {
 
 double QuadraticSolution_getPositive(QuadraticSolution* qs) {
     if (qs == NULL) {
-        printf("QuadraticSolution_getPositive: null pointer as parameter.");
+        printf("QuadraticSolution_getPositive: null pointer as parameter.\n");
         return -1;
     }
 
@@ -53,7 +53,7 @@ double QuadraticSolution_getPositive(QuadraticSolution* qs) {
 
 double QuadraticSolution_getNegative(QuadraticSolution* qs) {
     if (qs == NULL) {
-        printf("QuadraticSolution_getNegative: null pointer as parameter.");
+        printf("QuadraticSolution_getNegative: null pointer as parameter.\n");
         return -1;
     }
 
