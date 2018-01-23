@@ -1,3 +1,8 @@
+/*
+ * Vector3D source file
+ * Theo Olausson
+ * 23/01/18
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
