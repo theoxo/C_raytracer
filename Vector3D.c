@@ -90,3 +90,24 @@ double Vector3D_dot(Vector3D* a, Vector3D* b) {
 double Vector3D_magnitude(Vector3D* self) {
     return sqrt(Vector3D_dot(self, self));
 }
+
+// Calculates a-b
+Vector3D* Vector3D_difference(Vector3D* a, Vector3D* b) {
+    double x = Vector3D_getX(a) - Vector3D_getX(b);
+    double y = Vector3D_getY(a) - Vector3D_getY(b);
+    double z = Vector3D_getZ(a) - Vector3D_getZ(b);
+
+    Vector3D* result = Vector3D_create(x, y, z);
+    return result;
+}
+
+// Returns vec*factor
+Vector3D* Vector3D_multiply(Vector3D* vec, double factor) {
+    double x = Vector3D_getX(vec) * factor;
+    double y = Vector3D_getY(vec) * factor;
+    double z = Vector3D_getZ(vec) * factor;
+
+    Vector3D* result = Vector3D_create(x, y, z);
+    return result;
+}
+
