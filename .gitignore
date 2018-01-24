@@ -2,4 +2,4 @@
 .~
 thumbs.db
 *.o
-%.exe
+*.exe
