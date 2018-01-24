@@ -27,13 +27,13 @@ void QuadraticSolution_init(struct QuadraticSolution* self, double pos, double n
 struct QuadraticSolution* QuadraticSolution_create(double pos, double neg) {
     struct QuadraticSolution* qs = (struct QuadraticSolution*) malloc(sizeof(struct QuadraticSolution));
 
-    if (vqs == NULL) {
+    if (qs == NULL) {
         printf("QuadraticSolution_create: malloc failed; out of memory?\n");
         return NULL;
     }
 
     QuadraticSolution_init(qs, pos, neg);
-    return pos;
+    return qs;
 }
 
 void QuadraticSolution_destroy(struct QuadraticSolution* self) {

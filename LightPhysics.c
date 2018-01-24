@@ -35,7 +35,7 @@ Vector3D* LightPhysics_reflection(Vector3D* incident, Vector3D* surface_normal) 
 // an incident vector, a surface normal vector,
 // and the refractive indices gamma1 and gamma2 of 
 // the original and new medium, respectively
-Vector3D* LightPhysics_refraction(Vector3D* incident, Vector3D surface_normal, 
+Vector3D* LightPhysics_refraction(Vector3D* incident, Vector3D* surface_normal, 
         double gamma1, double gamma2) {
 
     double gamma = gamma1 / gamma2;
@@ -74,14 +74,16 @@ QuadraticSolution* LightPhysics_ray_sphere_intersection(Vector3D* sphere_centre,
 
     double in_sqrt = pow(b, 2) - 4*a*c;
     
-    if (in_sqrt < 0) {
+    double pos = 0;
+    double neg = 0;
+    if (in_sqrt >= 0) {
         // Non-real solution.
         // Returning 0,0 is good enough for our purposes
-        double pos = 0;
-        double neg = 0;
+        pos = ( -b + sqrt(pow(b,2) - 4*a*c) ) / (2*a);
+        neg = ( -b - sqrt(pow(b,2) - 4*a*c) ) / (2*a);
     } else {
-        double pos = ( -b + sqrt(pow(b,2) - 4*a*c) ) / (2*a);
-        double neg = ( -b - sqrt(pow(b,2) - 4*a*c) ) / (2*a);
+        // Non-real solution.
+        // Returning 0,0 is good enough for our purposes
     }
     
     QuadraticSolution* result = QuadraticSolution_create(pos, neg);
