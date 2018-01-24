@@ -2,12 +2,12 @@
 #include <stdio.h>
 
 typedef struct RGB {
-    double red;
-    double green;
-    double blue;
+    unsigned int red;
+    unsigned int green;
+    unsigned int blue;
 } RGB;
 
-void RGB_init(RGB* self, double red, double green, double blue) {
+void RGB_init(RGB* self, unsigned int red, unsigned int green, unsigned int blue) {
     if (self == NULL) {
         printf("RGB_init: supplied parameter self is NULL pointer.\n");
         return;
@@ -18,7 +18,7 @@ void RGB_init(RGB* self, double red, double green, double blue) {
     self->blue = blue;
 }
 
-RGB* RGB_create(double red, double green, double blue) {
+RGB* RGB_create(unsigned int red, unsigned int green, unsigned int blue) {
     RGB* result = (RGB*) malloc(sizeof(RGB));
     
     if (result == NULL) {
@@ -36,7 +36,7 @@ void RGB_destroy(RGB* self) {
     }
 }
 
-double RGB_getRed(RGB* self) {
+unsigned int RGB_getRed(RGB* self) {
     if (self == NULL) {
         printf("RGB_getRed: supplied self is null.\n");
         return 0;
@@ -44,7 +44,7 @@ double RGB_getRed(RGB* self) {
     return self->red;
 }
 
-double RGB_getGreen(RGB* self) {
+unsigned int RGB_getGreen(RGB* self) {
     if (self == NULL) {
         printf("RGB_getGreen: supplied self is null.\n");
         return 0;
@@ -52,7 +52,7 @@ double RGB_getGreen(RGB* self) {
     return self->green;
 }
 
-double RGB_getBlue(RGB* self) {
+unsigned int RGB_getBlue(RGB* self) {
     if (self == NULL) {
         printf("RGB_getBlue: supplied self is null.\n");
         return 0;

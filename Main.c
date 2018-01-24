@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
     for (unsigned int i = 0; i < height; i++) {
         for (unsigned int j = 0; j < width; j++) {
 
-            image_array[i][j] =  RGB_create(155, 155, 155);
+            image_array[i][j] =  RGB_create(50, 155, 0);
             if (image_array[i][j] == NULL) {
                 printf("image_array[%u][%u] null pointer error. Out of memory?\n", i, j);
                 exit(1);
@@ -70,6 +70,13 @@ int main(int argc, char* argv[]) {
                         QuadraticSolution_getNegative(quadratic_solution)
                         );
             
+            if (t <= 1) {
+               // try the other intersection
+                t = fmax(QuadraticSolution_getPositive(quadratic_solution),
+                        QuadraticSolution_getNegative(quadratic_solution)
+                        );
+            }
+
             // Free allocated memory
             QuadraticSolution_destroy(quadratic_solution);
             Vector3D_destroy(ray_direction);
