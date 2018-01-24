@@ -3,13 +3,21 @@
 #include "QuadraticSolution.h"
 #include "Vector3D.h"
 #include "LightPhysics.h"
+#include "RGB.h"
+#include "PPM.h"
 
-int main(int argc, char* argc[]) {
+int main(int argc, char* argv[]) {
+
+    if (argc != 1) {
+        printf("Usage: ./a.out <file_name>\n");
+        exit(1);
+    }
 
     unsigned int width = 256;
     unsigned int height = 256;
 
-    double** image_array = (double**) malloc(sizeof(double* * height));
+    // Note 2D-array, third pointer is to actual RGB itself
+    RGB*** image_array = (RGB***) malloc(sizeof(RGB**) * height);
 
     if (image_array == NULL) {
         printf("image_arrray null pointer error.\n");
@@ -17,10 +25,10 @@ int main(int argc, char* argc[]) {
     }
 
     for (unsigned int i = 0; i < height; i++) {
-        image_array[i] = (double*) malloc(sizeof(double * width));
+        image_array[i] = (RGB**) malloc(sizeof(RGB*) * width);
 
         if (image_array[i] == NULL) {
-            printf("image_array[%ui] null pointer error. Out of memory?\n", i);
+            printf("image_array[%u] null pointer error. Out of memory?\n", i);
             exit(1);
         }
     }
@@ -34,7 +42,11 @@ int main(int argc, char* argc[]) {
     for (unsigned int i = 0; i < height; i++) {
         for (unsigned int j = 0; j < width; j++) {
 
-            image_array[i][j] = 155;
+            image_array[i][j] =  RGB_create(155, 155, 155);
+            if (image_array[i][j] == NULL) {
+                printf("image_array[%u][%u] null pointer error. Out of memory?\n", i, j);
+                exit(1);
+            }
 
             double x_coordinate = -1 + ( (double) j / (double) width );
             double y_coordinate = -1 + ( (double) i / (double) height );
@@ -54,10 +66,29 @@ int main(int argc, char* argc[]) {
             double t = fmin(QuadraticSolution_getPositive(quadratic_solution),
                         QuadraticSolution_getNegative(quadratic_solution)
                         );
+            
+            // Free allocated memory
+            QuadraticSolution_destroy(quadratic_solution);
+            Vector3D_destroy(ray_direction);
+            Vector3D_destroy(ray_origin);
+            Vector3D_destroy(sphere_centre);
 
             // TODO this must update for every object iff lesser t, keep that in mind
             if (t > 1) { //TODO is this correct?
-                image_array[i][j] =
+                // re-initialize in new colour(s)
+                RGB_init(image_array[i][j], 200, 0, 0);
+            }
+        }
+    }
+
+    if (PPM_save(image_array, file_name, height, width)) {
+        printf("\n\n-------------------\nDone writing the file. Bye.\n");
+    } else {
+        printf("\n\n-------------------\nError writing file; see error trace.");
+    }
+    
+    exit(0);
+}
 
 
 
