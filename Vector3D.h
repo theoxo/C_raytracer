@@ -4,7 +4,7 @@
  * 23/01/18
  */
 
-struct Vector3D;
+typedef struct Vector3D Vector3D;
 Vector3D* Vector3D_create(double x, double y, double z);
 void Vector3D_destroy(Vector3D* self);
 double Vector3D_getX(Vector3D* self);

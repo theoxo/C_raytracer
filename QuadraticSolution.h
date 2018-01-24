@@ -1,4 +1,4 @@
-struct QuadraticSolution;
+typedef struct QuadraticSolution QuadraticSolution;
 void QuadraticSolution_init(QuadraticSolution* self, double pos, double neg);
 QuadraticSolution* QuadraticSolution_create(double pos, double neg);
 void QuadraticSolution_destroy(QuadraticSolution* self);

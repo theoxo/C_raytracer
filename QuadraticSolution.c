@@ -7,13 +7,13 @@
  * to the actual signs of the numbers, but the way in which
  * they were derived (i.e. in the "plus-minus" part of the quadratic formula)
  */
-typedef struct QuadraticSolution {
+struct QuadraticSolution {
     double positive;
     double negative;
-} QuadraticSolution;
+};
 
 // Initiliaze values but do not allocate memory
-void QuadraticSolution_init(QuadraticSolution* self, double pos, double neg) {
+void QuadraticSolution_init(struct QuadraticSolution* self, double pos, double neg) {
     if (self == NULL) {
         printf("QuadraticSolution_init: self is null.\n");
         return;
@@ -24,8 +24,8 @@ void QuadraticSolution_init(QuadraticSolution* self, double pos, double neg) {
 }
 
 // Initiliazation with allocation
-QuadraticSolution* QuadraticSolution_create(double pos, double neg) {
-    QuadraticSolution* qs = (QuadraticSolution*) malloc(sizeof(QuadraticSolution));
+struct QuadraticSolution* QuadraticSolution_create(double pos, double neg) {
+    struct QuadraticSolution* qs = (struct QuadraticSolution*) malloc(sizeof(struct QuadraticSolution));
 
     if (vqs == NULL) {
         printf("QuadraticSolution_create: malloc failed; out of memory?\n");
@@ -36,13 +36,13 @@ QuadraticSolution* QuadraticSolution_create(double pos, double neg) {
     return pos;
 }
 
-void QuadraticSolution_destroy(QuadraticSolution* self) {
+void QuadraticSolution_destroy(struct QuadraticSolution* self) {
     if (self != NULL) {
         free(self);
     }
 }
 
-double QuadraticSolution_getPositive(QuadraticSolution* qs) {
+double QuadraticSolution_getPositive(struct QuadraticSolution* qs) {
     if (qs == NULL) {
         printf("QuadraticSolution_getPositive: null pointer as parameter.\n");
         return -1;
@@ -51,7 +51,7 @@ double QuadraticSolution_getPositive(QuadraticSolution* qs) {
     return qs->positive;
 }
 
-double QuadraticSolution_getNegative(QuadraticSolution* qs) {
+double QuadraticSolution_getNegative(struct QuadraticSolution* qs) {
     if (qs == NULL) {
         printf("QuadraticSolution_getNegative: null pointer as parameter.\n");
         return -1;

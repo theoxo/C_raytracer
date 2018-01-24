@@ -72,8 +72,17 @@ QuadraticSolution* LightPhysics_ray_sphere_intersection(Vector3D* sphere_centre,
     double b = Vector3D_dot( Vector3D_multiply(ray_direction, 2), origin_minus_centre );
     double c = Vector3D_dot(origin_minus_centre, origin_minus_centre) - pow(radius, 2);
 
-    double pos = ( -b + sqrt(pow(b,2) - 4*a*c) ) / (2*a);
-    double neg = ( -b - sqrt(pow(b,2) - 4*a*c) ) / (2*a);
+    double in_sqrt = pow(b, 2) - 4*a*c;
+    
+    if (in_sqrt < 0) {
+        // Non-real solution.
+        // Returning 0,0 is good enough for our purposes
+        double pos = 0;
+        double neg = 0;
+    } else {
+        double pos = ( -b + sqrt(pow(b,2) - 4*a*c) ) / (2*a);
+        double neg = ( -b - sqrt(pow(b,2) - 4*a*c) ) / (2*a);
+    }
     
     QuadraticSolution* result = QuadraticSolution_create(pos, neg);
 
