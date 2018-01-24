@@ -1,10 +1,14 @@
 CC = gcc
 CFLAGS = -std=gnu99 -lm
-SRCS = Main.c RGB.c LightPhysics.c PPM.c Vector3D.c QuadraticSolution.c
-OBJS = Main.o RGB.o LightPhysics.o PPM.o Vector3D.o QuadraticSolution.o
+SRCS = source/Main.c source/RGB.c source/LightPhysics.c source/PPM.c source/Vector3D.c source/QuadraticSolution.c
+OBJS = bin/Main.o bin/RGB.o bin/LightPhysics.o bin/PPM.o bin/Vector3D.o bin/QuadraticSolution.o
 
 main.exe : $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o main.exe
+	$(CC) $(CFLAGS) $(OBJS) -o bin/main.exe
 
 %.o : %.c
 	$(CC) $(CFLAGS) -c $<
+
+.PHONY : clean
+clean :
+	-rm edit $(OBJS)
