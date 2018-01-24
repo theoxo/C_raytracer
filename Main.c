@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
 
     if (image_array == NULL) {
         printf("image_arrray null pointer error.\n");
-        exit(1)
+        exit(1);
     }
 
     for (unsigned int i = 0; i < height; i++) {
