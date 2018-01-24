@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "math.h"
 #include "QuadraticSolution.h"
 #include "Vector3D.h"
 #include "LightPhysics.h"
@@ -8,8 +9,8 @@
 
 int main(int argc, char* argv[]) {
 
-    if (argc != 1) {
-        printf("Usage: ./a.out <file_name>\n");
+    if (argc != 2) {
+        printf("Usage: main.exe <file_name>\n");
         exit(1);
     }
 
@@ -81,7 +82,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (PPM_save(image_array, file_name, height, width)) {
+    if (PPM_save(image_array, argv[1], height, width)) {
         printf("\n\n-------------------\nDone writing the file. Bye.\n");
     } else {
         printf("\n\n-------------------\nError writing file; see error trace.");
