@@ -16,8 +16,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\n=================\nWelcome. Beginning raytracing.\n=====================\n\n");
 
-    unsigned int width = 256;
-    unsigned int height = 256;
+    unsigned int width = 1024;
+    unsigned int height = 1024;
 
     // Note 2D-array, third pointer is to actual RGB itself
     RGB*** image_array = (RGB***) malloc(sizeof(RGB**) * height);
@@ -45,14 +45,14 @@ int main(int argc, char* argv[]) {
     for (unsigned int i = 0; i < height; i++) {
         for (unsigned int j = 0; j < width; j++) {
 
-            image_array[i][j] =  RGB_create(50, 155, 0);
+            image_array[i][j] =  RGB_create(255, 255, 255);
             if (image_array[i][j] == NULL) {
                 printf("image_array[%u][%u] null pointer error. Out of memory?\n", i, j);
                 exit(1);
             }
 
-            double x_coordinate = -1 + ( (double) j / (double) width );
-            double y_coordinate = -1 + ( (double) i / (double) height );
+            double x_coordinate = -1 + 2* ( (double) j / (double) width );
+            double y_coordinate = -1 + 2* ( (double) i / (double) height );
             
             Vector3D* ray_direction = Vector3D_create(x_coordinate, y_coordinate, 1);
             // ^(recall image is parallel to the plane but centered at <0, 0, 1>)

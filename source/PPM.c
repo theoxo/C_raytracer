@@ -14,24 +14,18 @@ int PPM_save(RGB*** pixel_array, char* file_name, unsigned int height, unsigned 
 
     fprintf(image, "P3\n%u %u\n255\n", width, height);
 
-    printf("\n------------------\nImage matrix:\n-------\n");
-
     for (unsigned int i = 0; i < height; i++) {
         for (unsigned int j = 0; j < width; j++) {
             fprintf(image, "%u ", RGB_getRed(pixel_array[i][j]));
-            fprintf(image, "%u ", RGB_getRed(pixel_array[i][j]));
             fprintf(image, "%u ", RGB_getGreen(pixel_array[i][j]));
-
-            printf("%u ", RGB_getBlue(pixel_array[i][j]));
-            printf("%u ", RGB_getGreen(pixel_array[i][j]));
-            printf("%u ", RGB_getBlue(pixel_array[i][j]));
-
+            fprintf(image, "%u ", RGB_getBlue(pixel_array[i][j]));
+             
             // Destroy pixel
             RGB_destroy(pixel_array[i][j]);
         }
+
         free(pixel_array[i]);
         fprintf(image, "\n");
-        printf("\n");
     }
 
     // Done writing. Close

@@ -8,6 +8,7 @@
 #include "Vector3D.h"
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 // Calculates the reflected vector based on the incident vector and the surface normal
 Vector3D* LightPhysics_reflection(Vector3D* incident, Vector3D* surface_normal) {
