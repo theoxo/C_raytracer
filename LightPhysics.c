@@ -9,7 +9,7 @@
 #include <math.h>
 
 // Calculates the reflected vector based on the incident vector and the surface normal
-Vector3D* LightPhysics_reflection(3DVector* incident, 3DVector* surface_normal) {
+Vector3D* LightPhysics_reflection(Vector3D* incident, Vector3D* surface_normal) {
    
     double x = Vector3D_getX(incident) 
               - ( 2 * Vector3D_dot(incident, surface_normal) 
@@ -35,7 +35,7 @@ Vector3D* LightPhysics_reflection(3DVector* incident, 3DVector* surface_normal) 
 // an incident vector, a surface normal vector,
 // and the refractive indices gamma1 and gamma2 of 
 // the original and new medium, respectively
-Vector3D* LightPhysics_refraction(3DVector* incident, 3DVector surface_normal, 
+Vector3D* LightPhysics_refraction(Vector3D* incident, Vector3D surface_normal, 
         double gamma1, double gamma2) {
 
     double gamma = gamma1 / gamma2;
