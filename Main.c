@@ -14,6 +14,8 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
+    printf("\n\n=================\nWelcome. Beginning raytracing.\n=====================\n\n");
+
     unsigned int width = 256;
     unsigned int height = 256;
 
@@ -85,7 +87,7 @@ int main(int argc, char* argv[]) {
     if (PPM_save(image_array, argv[1], height, width)) {
         printf("\n\n-------------------\nDone writing the file. Bye.\n");
     } else {
-        printf("\n\n-------------------\nError writing file; see error trace.");
+        printf("\n\n-------------------\nError writing file; see error trace.\n");
     }
     
     exit(0);
