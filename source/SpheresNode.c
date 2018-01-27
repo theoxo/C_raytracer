@@ -3,9 +3,19 @@
  * Theo Olausson
  * 27/01/18
  */
-#include "Sphere.h"
-#include <stdlib.h>
+
+#ifndef STDIO_H
+#define STDIO_H
 #include <stdio.h>
+#endif
+#ifndef STDLIB_H
+#define STDLIB_H
+#include <stdlib.h>
+#endif
+#ifndef SPHERE_H
+#define SPHERE_H
+#include "Sphere.h"
+#endif
 
 struct SpheresNode {
     struct SpheresNode* next;

@@ -3,7 +3,10 @@
  * Theo Olausson
  * 27/01/18
  */
+#ifndef SPHERE_H
+#define SPHERE_H
 #include "Sphere.h"
+#endif
 
 typedef struct SpheresNode SpheresNode;
 
