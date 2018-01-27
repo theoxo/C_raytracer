@@ -10,7 +10,7 @@
 int main(int argc, char* argv[]) {
 
     if (argc != 2) {
-        printf("Usage: main.exe <file_name>\n");
+        printf("Usage: main.exe <name of file to write>\n");
         exit(1);
     }
 
@@ -40,6 +40,11 @@ int main(int argc, char* argv[]) {
     // Let's fill it up.
 
     /*
+     * INITILIAZE OBJECTS IN IMAGE
+     */
+     Sphere* sphere = Sphere_create(sphere_centre, sphere_radius);
+
+    /*
      * Dimensions of image in space = 2x2, centered at the <0, 0, 1>
      */
     for (unsigned int i = 0; i < height; i++) {
@@ -58,10 +63,9 @@ int main(int argc, char* argv[]) {
             // ^(recall image is parallel to the plane but centered at <0, 0, 1>)
             Vector3D* ray_origin = Vector3D_create(0, 0, 0);
 
-            // NOTE THIS IS TEMPORARY, TODO LOOP OVER ALL OBJECTS
-            Vector3D* sphere_centre = Vector3D_create(0, 0, 3);
-            double sphere_radius = 1;
 
+            // TODO loop over all objects here
+            
             QuadraticSolution* quadratic_solution = 
                 LightPhysics_ray_sphere_intersection(sphere_centre, sphere_radius, 
                         ray_origin, ray_direction);

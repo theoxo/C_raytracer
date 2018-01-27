@@ -5,7 +5,7 @@
 // NB: DESTROYS supplied pixel_array
 int PPM_save(RGB*** pixel_array, char* file_name, unsigned int height, unsigned int width) {
 
-    FILE* image = fopen(file_name, "a");
+    FILE* image = fopen(file_name, "w+");
     
     if (image == NULL) {
         printf("PPM_save: Failed to allocate file.\n");
