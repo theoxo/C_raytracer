@@ -25,7 +25,7 @@ struct SpheresNode {
 struct SpheresNode* tail = NULL;
 struct SpheresNode* head = NULL;
 
-void SpheresNode_init(SpheresNode* self, Sphere* sphere) {
+void SpheresNode_init(struct SpheresNode* self, Sphere* sphere) {
     if (self == NULL || sphere == NULL) {
         printf("ListOfSPheres_init: passed parameter is null.\n");
         return;
@@ -33,21 +33,8 @@ void SpheresNode_init(SpheresNode* self, Sphere* sphere) {
 
     self->sphere = sphere;
 }
-
-struct SpheresNode* SpheresNode_newList(Sphere* sphere) {
-    if (node == NULL) {
-        printf("SpheresNode_newList: given sphere was null.\n");
-        return NULL;
-    }
-
-    struct SpheresNode* start = SpheresNode_create(sphere);
-    tail = start;
-    head = start;
-    return node;
-}
-
 struct SpheresNode* SpheresNode_create(Sphere* sphere) {
-    struct SpheresNode node = (struct SphereNode*) malloc(sizeof(struct SpheresNode));
+    struct SpheresNode* node = (struct SpheresNode*) malloc(sizeof(struct SpheresNode));
 
     if (node == NULL) {
         printf("SpheresNode_create: result of malloc is NULL.\n");
@@ -56,6 +43,18 @@ struct SpheresNode* SpheresNode_create(Sphere* sphere) {
 
     SpheresNode_init(node, sphere);
     return node;
+}
+
+struct SpheresNode* SpheresNode_newList(Sphere* sphere) {
+    if (sphere == NULL) {
+        printf("SpheresNode_newList: given sphere was null.\n");
+        return NULL;
+    }
+
+    struct SpheresNode* start = SpheresNode_create(sphere);
+    tail = start;
+    head = start;
+    return start;
 }
 
 void SpheresNode_destroyAll() {
@@ -79,6 +78,6 @@ void SpheresNode_add(Sphere* sphere) {
     head = node;
 }
 
-struct SpheresNode* SpheresNode_getTail()
+struct SpheresNode* SpheresNode_getTail(){
     return tail;
 }

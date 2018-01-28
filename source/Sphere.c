@@ -48,6 +48,7 @@ struct Sphere* Sphere_create(Vector3D* centre, double radius) {
 
 void Sphere_destroy(struct Sphere* self) {
     if (self != NULL) {
+        free(self->centre);
         free(self);
     }
 }

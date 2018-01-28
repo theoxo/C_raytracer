@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    printf("\n\n=================\nWelcome. Beginning raytracing.\n=====================\n\n");
+    printf("\n\n========================\nWelcome. Beginning raytracing.\n\n\n");
 
     unsigned int width = 1024;
     unsigned int height = 1024;
@@ -74,8 +74,10 @@ int main(int argc, char* argv[]) {
     /*
      * INITILIAZE OBJECTS IN IMAGE
      */
-     Sphere* sphere = Sphere_create(sphere_centre, sphere_radius);
-
+    Vector3D* sphere_centre = Vector3D_create(1, 2, 3);
+    double sphere_radius = 1.7;
+    Sphere* sphere = Sphere_create(sphere_centre, sphere_radius);
+    
     /*
      * Dimensions of image in space = 2x2, centered at the <0, 0, 1>
      */
@@ -89,7 +91,7 @@ int main(int argc, char* argv[]) {
             }
 
             double x_coordinate = -1 + 2* ( (double) j / (double) width );
-            double y_coordinate = -1 + 2* ( (double) i / (double) height );
+            double y_coordinate = 1 - 2* ( (double) i / (double) height );
             
             Vector3D* ray_direction = Vector3D_create(x_coordinate, y_coordinate, 1);
             // ^(recall image is parallel to the plane but centered at <0, 0, 1>)
@@ -97,9 +99,8 @@ int main(int argc, char* argv[]) {
 
 
             // TODO loop over all objects here
-            
             QuadraticSolution* quadratic_solution = 
-                LightPhysics_ray_sphere_intersection(sphere_centre, sphere_radius, 
+                LightPhysics_ray_sphere_intersection(sphere, 
                         ray_origin, ray_direction);
 
             double t = fmin(QuadraticSolution_getPositive(quadratic_solution),
@@ -117,7 +118,6 @@ int main(int argc, char* argv[]) {
             QuadraticSolution_destroy(quadratic_solution);
             Vector3D_destroy(ray_direction);
             Vector3D_destroy(ray_origin);
-            Vector3D_destroy(sphere_centre);
 
             // TODO this must update for every object iff lesser t, keep that in mind
             if (t > 1) { //TODO is this correct?
@@ -127,10 +127,12 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    
+
     if (PPM_save(image_array, argv[1], height, width)) {
-        printf("\n\n-------------------\nDone writing the file. Bye.\n");
+        printf("\nDone writing the file. Bye.\n========================\n\n");
     } else {
-        printf("\n\n-------------------\nError writing file; see error trace.\n");
+        printf("\nError writing file; see error trace.\n========================\n\n");
     }
     
     exit(0);

@@ -89,9 +89,9 @@ Vector3D* LightPhysics_refraction(Vector3D* incident, Vector3D* surface_normal,
     return result;
 }
 
-QuadraticSolution* LightPhysics_ray_sphere_intersection(Sphere* sphere,
-        Vector3D* ray_origin, Vector3D* ray_direction) {
+QuadraticSolution* LightPhysics_ray_sphere_intersection(Sphere* sphere, Vector3D* ray_origin, Vector3D* ray_direction) {
 
+    
     Vector3D* origin_minus_centre = Vector3D_difference(ray_origin, Sphere_getCentre(sphere));
 
     double a = Vector3D_dot(ray_direction, ray_direction);
