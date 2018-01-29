@@ -10,8 +10,9 @@
 
 typedef struct SpheresNode SpheresNode;
 
-void SpheresNode_init(SpheresNode* self, Sphere* sphere); 
-SpheresNode* SpheresNode_create(Sphere* sphere);
-void SpheresNode_destroyAll();
+SpheresNode* SpheresNode_newList(Sphere* sphere);
+Sphere* SpheresNode_getSphere(SpheresNode* node);
+void SpheresNode_destroyAllFollowing(SpheresNode* node);
 void SpheresNode_add(Sphere* sphere);
 SpheresNode* SpheresNode_getTail();
+SpheresNode* SpheresNode_getNext();

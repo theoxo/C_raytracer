@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./main.exe image.ppm && convert image.ppm image.png
+

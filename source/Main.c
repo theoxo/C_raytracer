@@ -38,6 +38,10 @@
 #define VECTOR3D_H
 #include "Vector3D.h"
 #endif
+#ifndef LIMITS_H
+#define LIMITS_H
+#include <limits.h>
+#endif
 
 int main(int argc, char* argv[]) {
 
@@ -74,10 +78,16 @@ int main(int argc, char* argv[]) {
     /*
      * INITILIAZE OBJECTS IN IMAGE
      */
-    Vector3D* sphere_centre = Vector3D_create(1, 2, 3);
-    double sphere_radius = 1.7;
-    Sphere* sphere = Sphere_create(sphere_centre, sphere_radius);
+    Vector3D* sphere1_centre = Vector3D_create(1, 0, 5);
+    Sphere* sphere1 = Sphere_create(sphere1_centre, 3, 200, 0, 0);
+
+    Vector3D* sphere2_centre = Vector3D_create(-1, 0, 7);
+    Sphere* sphere2 = Sphere_create(sphere2_centre, 5, 0, 200, 0);
     
+    SpheresNode* spheres_tail = SpheresNode_newList(sphere1);
+    SpheresNode_add(sphere2);
+    SpheresNode* spheres_traverser = spheres_tail;
+
     /*
      * Dimensions of image in space = 2x2, centered at the <0, 0, 1>
      */
@@ -98,36 +108,56 @@ int main(int argc, char* argv[]) {
             Vector3D* ray_origin = Vector3D_create(0, 0, 0);
 
 
-            // TODO loop over all objects here
-            QuadraticSolution* quadratic_solution = 
-                LightPhysics_ray_sphere_intersection(sphere, 
-                        ray_origin, ray_direction);
+            double t_min = 0;
+            Sphere* sphere_to_draw;
 
-            double t = fmin(QuadraticSolution_getPositive(quadratic_solution),
-                        QuadraticSolution_getNegative(quadratic_solution)
-                        );
-            
-            if (t <= 1) {
-               // try the other intersection
-                t = fmax(QuadraticSolution_getPositive(quadratic_solution),
-                        QuadraticSolution_getNegative(quadratic_solution)
-                        );
+            while (spheres_traverser != NULL) {
+                QuadraticSolution* quadratic_solution = 
+                    LightPhysics_ray_sphere_intersection(SpheresNode_getSphere(spheres_traverser), 
+                            ray_origin, ray_direction);
+
+                double t = fmin(QuadraticSolution_getPositive(quadratic_solution),
+                            QuadraticSolution_getNegative(quadratic_solution)
+                            );
+                
+                if (t <= 1) {
+                   // try the other intersection
+                    t = fmax(QuadraticSolution_getPositive(quadratic_solution),
+                            QuadraticSolution_getNegative(quadratic_solution)
+                            );
+                }
+
+
+                // update t_min if t current t is closer to the camera
+                if ( (t > 1 && t < t_min) || t_min == 0 ) {
+                    t_min = t;
+                    sphere_to_draw = SpheresNode_getSphere(spheres_traverser);
+                }
+
+                spheres_traverser = SpheresNode_getNext(spheres_traverser);
+                 
+                // Free allocated memory
+                QuadraticSolution_destroy(quadratic_solution);
             }
 
+            spheres_traverser = spheres_tail;
+
             // Free allocated memory
-            QuadraticSolution_destroy(quadratic_solution);
             Vector3D_destroy(ray_direction);
             Vector3D_destroy(ray_origin);
 
             // TODO this must update for every object iff lesser t, keep that in mind
-            if (t > 1) { //TODO is this correct?
+            if (t_min > 1) { //TODO is this correct?
                 // re-initialize in new colour(s)
-                RGB_init(image_array[i][j], 200, 0, 0);
+                RGB_init(image_array[i][j], Sphere_getRed(sphere_to_draw), 
+                        Sphere_getGreen(sphere_to_draw), Sphere_getBlue(sphere_to_draw));
             }
         }
+
     }
 
-    
+    //Destroy list  as it's now unused
+    SpheresNode_destroyAllFollowing(spheres_tail);
 
     if (PPM_save(image_array, argv[1], height, width)) {
         printf("\nDone writing the file. Bye.\n========================\n\n");

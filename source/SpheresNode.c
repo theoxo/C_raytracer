@@ -31,8 +31,10 @@ void SpheresNode_init(struct SpheresNode* self, Sphere* sphere) {
         return;
     }
 
+    self->next = NULL;
     self->sphere = sphere;
 }
+
 struct SpheresNode* SpheresNode_create(Sphere* sphere) {
     struct SpheresNode* node = (struct SpheresNode*) malloc(sizeof(struct SpheresNode));
 
@@ -43,6 +45,14 @@ struct SpheresNode* SpheresNode_create(Sphere* sphere) {
 
     SpheresNode_init(node, sphere);
     return node;
+}
+
+Sphere* SpheresNode_getSphere(struct SpheresNode* node) {
+    if (node != NULL) {
+        return node->sphere;
+    }
+    
+    printf("SpheresNode_getSphere: given node was null.\n");
 }
 
 struct SpheresNode* SpheresNode_newList(Sphere* sphere) {
@@ -57,11 +67,13 @@ struct SpheresNode* SpheresNode_newList(Sphere* sphere) {
     return start;
 }
 
-void SpheresNode_destroyAll() {
-    while (tail != NULL) {
-        struct SpheresNode* next = tail->next;
-        free(tail);
-        tail = next;
+void SpheresNode_destroyAllFollowing(struct SpheresNode* node) {
+    while (node != NULL) {
+        struct SpheresNode* next = node->next;
+        //Also free inner sphere of node
+        free(node->sphere);
+        free(node);
+        node = next;
     }
 
     printf("SpheresNode_destroyAll: List was destroyed.\n");
@@ -80,4 +92,12 @@ void SpheresNode_add(Sphere* sphere) {
 
 struct SpheresNode* SpheresNode_getTail(){
     return tail;
+}
+
+struct SpheresNode* SpheresNode_getNext(struct SpheresNode* node) {
+    if (node != NULL) {
+        return node->next;
+    }
+
+    printf("SpheresNode_getNext: given SpheresNode was null.\n");
 }
