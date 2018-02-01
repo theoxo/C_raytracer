@@ -53,6 +53,7 @@ Sphere* SpheresNode_getSphere(struct SpheresNode* node) {
     }
     
     printf("SpheresNode_getSphere: given node was null.\n");
+    return NULL;
 }
 
 struct SpheresNode* SpheresNode_newList(Sphere* sphere) {
@@ -100,4 +101,5 @@ struct SpheresNode* SpheresNode_getNext(struct SpheresNode* node) {
     }
 
     printf("SpheresNode_getNext: given SpheresNode was null.\n");
+    return NULL;
 }

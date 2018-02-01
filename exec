@@ -1,4 +1,4 @@
 #!/bin/bash
 
-./main.exe image.ppm && convert image.ppm image.png
+./main.exe image.ppm && convert image.ppm image.png && rm image.ppm
 

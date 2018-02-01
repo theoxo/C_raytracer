@@ -36,9 +36,9 @@ void Sphere_init(struct Sphere* self, Vector3D* centre, double radius, unsigned 
 
     self->centre = centre;
     self->radius = radius;
-    self->red = red % 256;
-    self->green = green % 256;
-    self->blue = blue % 256;
+    self->red = red;
+    self->green = green;
+    self->blue = blue;
 }
 
 // Initiliazation with allocation
@@ -87,6 +87,7 @@ unsigned int Sphere_getRed(struct Sphere* self) {
     }
 
     printf("Sphere_getRed: passed pointer is null.\n");
+    return 0;
 }
 
 unsigned int Sphere_getGreen(struct Sphere* self) {
@@ -95,6 +96,7 @@ unsigned int Sphere_getGreen(struct Sphere* self) {
     }
 
     printf("Sphere_getGreen: passed pointer is null.\n");
+    return 0;
 }
 
 unsigned int Sphere_getBlue(struct Sphere* self) {
@@ -103,4 +105,34 @@ unsigned int Sphere_getBlue(struct Sphere* self) {
     }
 
     printf("Sphere_getBlue: passed pointer is null.\n");
+    return 0;
+}
+
+void Sphere_scaleColors(struct Sphere* self, double factor) {
+    if (self != NULL) {
+        double r = self->red * factor;
+        double g = self->green * factor;
+        double b = self->blue * factor;
+
+        if (r > 255) {
+            r = 255;
+        }
+        if (g > 255) {
+            g = 255;
+        }
+        if (b > 255) {
+            b = 255;
+        }
+
+        self->red = (unsigned int) r;
+        self->green = (unsigned int) g;
+        self->blue = (unsigned int) b;
+
+        printf("R: %u\n", self->red);
+        printf("G: %u\n", self->green);
+        printf("B: %u\n", self->blue);
+
+    } else {
+        printf("Sphere_scaleColors: passed parameter self is null.\n");
+    }
 }

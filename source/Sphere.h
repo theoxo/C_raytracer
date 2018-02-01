@@ -18,3 +18,4 @@ double Sphere_getRadius(Sphere* self);
 unsigned int Sphere_getRed(Sphere* self);
 unsigned int Sphere_getGreen(Sphere* self);
 unsigned int Sphere_getBlue(Sphere* self);
+void Sphere_scaleColors(struct Sphere* self, double factor); 

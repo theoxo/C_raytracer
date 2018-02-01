@@ -78,15 +78,18 @@ int main(int argc, char* argv[]) {
     /*
      * INITILIAZE OBJECTS IN IMAGE
      */
-    Vector3D* sphere1_centre = Vector3D_create(1, 0, 5);
-    Sphere* sphere1 = Sphere_create(sphere1_centre, 3, 200, 0, 0);
-
-    Vector3D* sphere2_centre = Vector3D_create(-1, 0, 7);
-    Sphere* sphere2 = Sphere_create(sphere2_centre, 5, 0, 200, 0);
-    
+    Vector3D* sphere1_centre = Vector3D_create(0.5, 0, 1);
+    Sphere* sphere1 = Sphere_create(sphere1_centre, 0.5, 150, 0, 0);
+/*
+    Vector3D* sphere2_centre = Vector3D_create(-1, 1, 7);
+    Sphere* sphere2 = Sphere_create(sphere2_centre, 4, 0, 150, 0);
+   */ 
     SpheresNode* spheres_tail = SpheresNode_newList(sphere1);
-    SpheresNode_add(sphere2);
+    //SpheresNode_add(sphere2);
     SpheresNode* spheres_traverser = spheres_tail;
+
+    Vector3D* light_centre = Vector3D_create(0, 0, 0); //free me TODO
+    double light_luminance = 2;
 
     /*
      * Dimensions of image in space = 2x2, centered at the <0, 0, 1>
@@ -103,15 +106,17 @@ int main(int argc, char* argv[]) {
             double x_coordinate = -1 + 2* ( (double) j / (double) width );
             double y_coordinate = 1 - 2* ( (double) i / (double) height );
             
+            // unit vector for the direction
             Vector3D* ray_direction = Vector3D_create(x_coordinate, y_coordinate, 1);
+            //printf("Dir: %f\n", Vector3D_magnitude(ray_direction));
             // ^(recall image is parallel to the plane but centered at <0, 0, 1>)
             Vector3D* ray_origin = Vector3D_create(0, 0, 0);
-
 
             double t_min = 0;
             Sphere* sphere_to_draw;
 
             while (spheres_traverser != NULL) {
+
                 QuadraticSolution* quadratic_solution = 
                     LightPhysics_ray_sphere_intersection(SpheresNode_getSphere(spheres_traverser), 
                             ray_origin, ray_direction);
@@ -140,18 +145,40 @@ int main(int argc, char* argv[]) {
                 QuadraticSolution_destroy(quadratic_solution);
             }
 
+            if (t_min > 1) { //TODO is this correct?
+                Vector3D* intersection_point = Vector3D_multiply(ray_direction, t_min);
+                //printf("Ray_direction at: (%f, %f, %f)\n", Vector3D_getX(ray_direction), Vector3D_getY(ray_direction), Vector3D_getZ(ray_direction));
+                //printf("Intersection at: (%f, %f, %f)\n", Vector3D_getX(intersection_point), Vector3D_getY(intersection_point), Vector3D_getZ(intersection_point));
+                Vector3D* surface_normal = Vector3D_difference(intersection_point, Sphere_getCentre(sphere_to_draw));
+                Vector3D* light_to_intersection = Vector3D_difference(intersection_point, light_centre);
+                //printf("Surface_normal at: (%f, %f, %f)\n", Vector3D_getX(surface_normal), Vector3D_getY(surface_normal), Vector3D_getZ(surface_normal));
+                //printf("light_to_intersection at: (%f, %f, %f)\n\n", Vector3D_getX(light_to_intersection), Vector3D_getY(light_to_intersection), Vector3D_getZ(light_to_intersection));
+
+                // cos(Theta) = a.b / (|a|*|b|)
+                //printf("Dot: %f\n", Vector3D_dot(surface_normal, light_to_intersection));
+                //printf("Magnitude of surface normal: %f\n", Vector3D_magnitude(surface_normal));
+                //printf("Magnitude of 'light to intersection': %f\n", Vector3D_magnitude(light_to_intersection));
+                double cos = Vector3D_dot(surface_normal, light_to_intersection)
+                                    / (Vector3D_magnitude(surface_normal) * Vector3D_magnitude(light_to_intersection));
+                //printf("cos: %f\n\n", cos);
+                cos = fmax(cos, 0);
+
+                double energy = light_luminance * cos / pow(Vector3D_magnitude(light_to_intersection), 1);
+                printf("Energy: %f\n", energy);
+                printf("oldR: %u\n", Sphere_getRed(sphere_to_draw));
+                printf("oldG: %u\n", Sphere_getGreen(sphere_to_draw));
+                printf("oldB: %u\n", Sphere_getBlue(sphere_to_draw));
+                Sphere_scaleColors(sphere_to_draw, energy);
+                // re-initialize in new colour(s)
+                RGB_init(image_array[i][j], Sphere_getRed(sphere_to_draw), 
+                        Sphere_getGreen(sphere_to_draw), Sphere_getBlue(sphere_to_draw));
+            }
+
             spheres_traverser = spheres_tail;
 
             // Free allocated memory
             Vector3D_destroy(ray_direction);
             Vector3D_destroy(ray_origin);
-
-            // TODO this must update for every object iff lesser t, keep that in mind
-            if (t_min > 1) { //TODO is this correct?
-                // re-initialize in new colour(s)
-                RGB_init(image_array[i][j], Sphere_getRed(sphere_to_draw), 
-                        Sphere_getGreen(sphere_to_draw), Sphere_getBlue(sphere_to_draw));
-            }
         }
 
     }
