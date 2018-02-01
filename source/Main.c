@@ -80,16 +80,15 @@ int main(int argc, char* argv[]) {
      */
     Vector3D* sphere1_centre = Vector3D_create(0.5, 0, 1);
     Sphere* sphere1 = Sphere_create(sphere1_centre, 0.5, 150, 0, 0);
-/*
-    Vector3D* sphere2_centre = Vector3D_create(-1, 1, 7);
-    Sphere* sphere2 = Sphere_create(sphere2_centre, 4, 0, 150, 0);
-   */ 
+
+    Vector3D* sphere2_centre = Vector3D_create(-1, 1, 3);
+    Sphere* sphere2 = Sphere_create(sphere2_centre, 1, 0, 150, 0);
     SpheresNode* spheres_tail = SpheresNode_newList(sphere1);
-    //SpheresNode_add(sphere2);
+    SpheresNode_add(sphere2);
     SpheresNode* spheres_traverser = spheres_tail;
 
-    Vector3D* light_centre = Vector3D_create(0, 0, 0); //free me TODO
-    double light_luminance = 2;
+    Vector3D* light_centre = Vector3D_create(-1, 1, 0); //free me TODO
+    double light_luminance = 5;
 
     /*
      * Dimensions of image in space = 2x2, centered at the <0, 0, 1>
@@ -97,7 +96,7 @@ int main(int argc, char* argv[]) {
     for (unsigned int i = 0; i < height; i++) {
         for (unsigned int j = 0; j < width; j++) {
 
-            image_array[i][j] =  RGB_create(255, 255, 255);
+            image_array[i][j] =  RGB_create(0, 0, 0);
             if (image_array[i][j] == NULL) {
                 printf("image_array[%u][%u] null pointer error. Out of memory?\n", i, j);
                 exit(1);
@@ -164,14 +163,18 @@ int main(int argc, char* argv[]) {
                 cos = fmax(cos, 0);
 
                 double energy = light_luminance * cos / pow(Vector3D_magnitude(light_to_intersection), 1);
-                printf("Energy: %f\n", energy);
-                printf("oldR: %u\n", Sphere_getRed(sphere_to_draw));
-                printf("oldG: %u\n", Sphere_getGreen(sphere_to_draw));
-                printf("oldB: %u\n", Sphere_getBlue(sphere_to_draw));
-                Sphere_scaleColors(sphere_to_draw, energy);
+                double red = Sphere_getRed(sphere_to_draw) * energy;
+                if (red > 255) {red = 255;}
+                double green = Sphere_getGreen(sphere_to_draw) * energy;
+                if (green > 255) {green = 255;}
+                double blue = Sphere_getBlue(sphere_to_draw) * energy;
+                if (blue > 255) {blue = 255;}
+                //printf("Energy: %f\n", energy);
+                //printf("oldR: %u\n", Sphere_getRed(sphere_to_draw));
+                //printf("oldG: %u\n", Sphere_getGreen(sphere_to_draw));
+                //printf("oldB: %u\n", Sphere_getBlue(sphere_to_draw));
                 // re-initialize in new colour(s)
-                RGB_init(image_array[i][j], Sphere_getRed(sphere_to_draw), 
-                        Sphere_getGreen(sphere_to_draw), Sphere_getBlue(sphere_to_draw));
+                RGB_init(image_array[i][j], red, green, blue);
             }
 
             spheres_traverser = spheres_tail;

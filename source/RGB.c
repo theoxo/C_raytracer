@@ -7,13 +7,13 @@
 #include <stdlib.h>
 #endif
 
-typedef struct RGB {
+struct RGB {
     unsigned int red;
     unsigned int green;
     unsigned int blue;
-} RGB;
+};
 
-void RGB_init(RGB* self, unsigned int red, unsigned int green, unsigned int blue) {
+void RGB_init(struct RGB* self, unsigned int red, unsigned int green, unsigned int blue) {
     if (self == NULL) {
         printf("RGB_init: supplied parameter self is NULL pointer.\n");
         return;
@@ -24,8 +24,8 @@ void RGB_init(RGB* self, unsigned int red, unsigned int green, unsigned int blue
     self->blue = blue;
 }
 
-RGB* RGB_create(unsigned int red, unsigned int green, unsigned int blue) {
-    RGB* result = (RGB*) malloc(sizeof(RGB));
+struct RGB* RGB_create(unsigned int red, unsigned int green, unsigned int blue) {
+    struct RGB* result = (struct RGB*) malloc(sizeof(struct RGB));
     
     if (result == NULL) {
         printf("RGB_create: result is NULL. Out of memory?\n");
@@ -36,13 +36,13 @@ RGB* RGB_create(unsigned int red, unsigned int green, unsigned int blue) {
     return result;
 }
 
-void RGB_destroy(RGB* self) {
+void RGB_destroy(struct RGB* self) {
     if (self != NULL) {
         free(self);
     }
 }
 
-unsigned int RGB_getRed(RGB* self) {
+unsigned int RGB_getRed(struct RGB* self) {
     if (self == NULL) {
         printf("RGB_getRed: supplied self is null.\n");
         return 0;
@@ -50,7 +50,7 @@ unsigned int RGB_getRed(RGB* self) {
     return self->red;
 }
 
-unsigned int RGB_getGreen(RGB* self) {
+unsigned int RGB_getGreen(struct RGB* self) {
     if (self == NULL) {
         printf("RGB_getGreen: supplied self is null.\n");
         return 0;
@@ -58,10 +58,25 @@ unsigned int RGB_getGreen(RGB* self) {
     return self->green;
 }
 
-unsigned int RGB_getBlue(RGB* self) {
+unsigned int RGB_getBlue(struct RGB* self) {
     if (self == NULL) {
         printf("RGB_getBlue: supplied self is null.\n");
         return 0;
     }
     return self->blue;
+}
+
+struct RGB* RGB_copy(struct RGB* source) {
+    if (source != NULL) {
+        double red = RGB_getRed(source);
+        double green = RGB_getGreen(source);
+        double blue = RGB_getBlue(source);
+
+        struct RGB* result = RGB_create(red, green, blue);
+
+        return result;
+    } else {
+        printf("RGB_copy: passed source parameter is null.\n");
+        return NULL;
+    }
 }

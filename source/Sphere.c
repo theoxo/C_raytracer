@@ -108,6 +108,10 @@ unsigned int Sphere_getBlue(struct Sphere* self) {
     return 0;
 }
 
+/* Note this scales (and thus changes) the actual RGB values of the sphere, 
+ * not a copy thereof.
+ * This is probably **not** what you want to do.
+ */
 void Sphere_scaleColors(struct Sphere* self, double factor) {
     if (self != NULL) {
         double r = self->red * factor;
