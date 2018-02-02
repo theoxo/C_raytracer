@@ -4,18 +4,9 @@
  * 27/01/18
  */
 
-#ifndef STDIO_H
-#define STDIO_H
 #include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
 #include <stdlib.h>
-#endif
-#ifndef VECTOR3D_H
-#define VECTOR3D_H
 #include "Vector3D.h"
-#endif
 
 struct Sphere {
     double radius;
@@ -36,9 +27,9 @@ void Sphere_init(struct Sphere* self, Vector3D* centre, double radius, unsigned 
 
     self->centre = centre;
     self->radius = radius;
-    self->red = red % 256;
-    self->green = green % 256;
-    self->blue = blue % 256;
+    self->red = red;
+    self->green = green;
+    self->blue = blue;
 }
 
 // Initiliazation with allocation
@@ -87,6 +78,7 @@ unsigned int Sphere_getRed(struct Sphere* self) {
     }
 
     printf("Sphere_getRed: passed pointer is null.\n");
+    return 0;
 }
 
 unsigned int Sphere_getGreen(struct Sphere* self) {
@@ -95,6 +87,7 @@ unsigned int Sphere_getGreen(struct Sphere* self) {
     }
 
     printf("Sphere_getGreen: passed pointer is null.\n");
+    return 0;
 }
 
 unsigned int Sphere_getBlue(struct Sphere* self) {
@@ -103,4 +96,38 @@ unsigned int Sphere_getBlue(struct Sphere* self) {
     }
 
     printf("Sphere_getBlue: passed pointer is null.\n");
+    return 0;
+}
+
+/* Note this scales (and thus changes) the actual RGB values of the sphere, 
+ * not a copy thereof.
+ * This is probably **not** what you want to do.
+ */
+void Sphere_scaleColors(struct Sphere* self, double factor) {
+    if (self != NULL) {
+        double r = self->red * factor;
+        double g = self->green * factor;
+        double b = self->blue * factor;
+
+        if (r > 255) {
+            r = 255;
+        }
+        if (g > 255) {
+            g = 255;
+        }
+        if (b > 255) {
+            b = 255;
+        }
+
+        self->red = (unsigned int) r;
+        self->green = (unsigned int) g;
+        self->blue = (unsigned int) b;
+
+        printf("R: %u\n", self->red);
+        printf("G: %u\n", self->green);
+        printf("B: %u\n", self->blue);
+
+    } else {
+        printf("Sphere_scaleColors: passed parameter self is null.\n");
+    }
 }

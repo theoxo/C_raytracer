@@ -4,18 +4,9 @@
  * 23/01/18
  */
 
-#ifndef STDIO_H
-#define STDIO_H
 #include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
 #include <stdlib.h>
-#endif
-#ifndef MATH_H
-#define MATH_H
 #include <math.h>
-#endif
 
 struct Vector3D {
     double x;

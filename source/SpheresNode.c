@@ -4,18 +4,9 @@
  * 27/01/18
  */
 
-#ifndef STDIO_H
-#define STDIO_H
 #include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
 #include <stdlib.h>
-#endif
-#ifndef SPHERE_H
-#define SPHERE_H
 #include "Sphere.h"
-#endif
 
 struct SpheresNode {
     struct SpheresNode* next;
@@ -53,6 +44,7 @@ Sphere* SpheresNode_getSphere(struct SpheresNode* node) {
     }
     
     printf("SpheresNode_getSphere: given node was null.\n");
+    return NULL;
 }
 
 struct SpheresNode* SpheresNode_newList(Sphere* sphere) {
@@ -100,4 +92,5 @@ struct SpheresNode* SpheresNode_getNext(struct SpheresNode* node) {
     }
 
     printf("SpheresNode_getNext: given SpheresNode was null.\n");
+    return NULL;
 }

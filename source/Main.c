@@ -1,47 +1,14 @@
-#ifndef STDIO_H
-#define STDIO_H
 #include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
 #include <stdlib.h>
-#endif
-#ifndef MATH_H
-#define MATH_H
 #include <math.h>
-#endif
-#ifndef QUADRATICSOLUTION_H
-#define QUADRATICSOLUTION_H
-#include "QuadraticSolution.h"
-#endif
-#ifndef SPHERE_H
-#define SPHERE_H
-#include "Sphere.h"
-#endif
-#ifndef SPHERESNODE_H
-#define SPHERESNODE_H
-#include "SpheresNode.h"
-#endif
-#ifndef LIGHTPHYSICS_H
-#define LIGHTPHYSICS_H
-#include "LightPhysics.h"
-#endif
-#ifndef RGB_H
-#define RGB_H
-#include "RGB.h"
-#endif
-#ifndef PPM_H
-#define PPM_H
-#include "PPM.h"
-#endif
-#ifndef VECTOR3D_H
-#define VECTOR3D_H
-#include "Vector3D.h"
-#endif
-#ifndef LIMITS_H
-#define LIMITS_H
 #include <limits.h>
-#endif
+#include "QuadraticSolution.h"
+#include "Sphere.h"
+#include "SpheresNode.h"
+#include "LightPhysics.h"
+#include "RGB.h"
+#include "PPM.h"
+#include "Vector3D.h"
 
 int main(int argc, char* argv[]) {
 
@@ -78,15 +45,17 @@ int main(int argc, char* argv[]) {
     /*
      * INITILIAZE OBJECTS IN IMAGE
      */
-    Vector3D* sphere1_centre = Vector3D_create(1, 0, 5);
-    Sphere* sphere1 = Sphere_create(sphere1_centre, 3, 200, 0, 0);
+    Vector3D* sphere1_centre = Vector3D_create(0.5, 0, 2);
+    Sphere* sphere1 = Sphere_create(sphere1_centre, 0.5, 150, 0, 0);
 
-    Vector3D* sphere2_centre = Vector3D_create(-1, 0, 7);
-    Sphere* sphere2 = Sphere_create(sphere2_centre, 5, 0, 200, 0);
-    
+    Vector3D* sphere2_centre = Vector3D_create(-1, 1, 3);
+    Sphere* sphere2 = Sphere_create(sphere2_centre, 1, 0, 150, 0);
     SpheresNode* spheres_tail = SpheresNode_newList(sphere1);
     SpheresNode_add(sphere2);
     SpheresNode* spheres_traverser = spheres_tail;
+
+    Vector3D* light_centre = Vector3D_create(0, 1, -1); //free me TODO
+    double light_luminance = 10;
 
     /*
      * Dimensions of image in space = 2x2, centered at the <0, 0, 1>
@@ -94,7 +63,7 @@ int main(int argc, char* argv[]) {
     for (unsigned int i = 0; i < height; i++) {
         for (unsigned int j = 0; j < width; j++) {
 
-            image_array[i][j] =  RGB_create(255, 255, 255);
+            image_array[i][j] =  RGB_create(0, 0, 0);
             if (image_array[i][j] == NULL) {
                 printf("image_array[%u][%u] null pointer error. Out of memory?\n", i, j);
                 exit(1);
@@ -103,15 +72,17 @@ int main(int argc, char* argv[]) {
             double x_coordinate = -1 + 2* ( (double) j / (double) width );
             double y_coordinate = 1 - 2* ( (double) i / (double) height );
             
-            Vector3D* ray_direction = Vector3D_create(x_coordinate, y_coordinate, 1);
+            // unit vector for the direction
+            Vector3D* ray_direction = Vector3D_create(x_coordinate, y_coordinate, 1); 
             // ^(recall image is parallel to the plane but centered at <0, 0, 1>)
+            
             Vector3D* ray_origin = Vector3D_create(0, 0, 0);
-
 
             double t_min = 0;
             Sphere* sphere_to_draw;
 
             while (spheres_traverser != NULL) {
+
                 QuadraticSolution* quadratic_solution = 
                     LightPhysics_ray_sphere_intersection(SpheresNode_getSphere(spheres_traverser), 
                             ray_origin, ray_direction);
@@ -128,7 +99,7 @@ int main(int argc, char* argv[]) {
                 }
 
 
-                // update t_min if t current t is closer to the camera
+                // update t_min if current t is closer to the camera (/origin)
                 if ( (t > 1 && t < t_min) || t_min == 0 ) {
                     t_min = t;
                     sphere_to_draw = SpheresNode_getSphere(spheres_traverser);
@@ -140,25 +111,46 @@ int main(int argc, char* argv[]) {
                 QuadraticSolution_destroy(quadratic_solution);
             }
 
+            if (t_min > 1) { 
+                Vector3D* intersection_point = Vector3D_multiply(ray_direction, t_min);
+                Vector3D* surface_normal = Vector3D_difference(intersection_point, Sphere_getCentre(sphere_to_draw));
+                Vector3D* intersection_to_light = Vector3D_difference(light_centre, intersection_point);
+
+                // cos(Theta) = a.b / (|a|*|b|)
+                double cos = Vector3D_dot(surface_normal, intersection_to_light)
+                                    / (Vector3D_magnitude(surface_normal) * Vector3D_magnitude(intersection_to_light));
+                cos = fmax(cos, 0);
+
+                double energy = light_luminance * cos / pow(Vector3D_magnitude(intersection_to_light), 1.5);
+                double red = Sphere_getRed(sphere_to_draw) * energy;
+                if (red > 255) {red = 255;}
+                double green = Sphere_getGreen(sphere_to_draw) * energy;
+                if (green > 255) {green = 255;}
+                double blue = Sphere_getBlue(sphere_to_draw) * energy;
+                if (blue > 255) {blue = 255;}
+
+                // re-initialize in new colour(s)
+                RGB_init(image_array[i][j], red, green, blue);
+
+                // Free allocated memory
+                Vector3D_destroy(intersection_point);
+                Vector3D_destroy(surface_normal);
+                Vector3D_destroy(intersection_to_light);
+            }
+
             spheres_traverser = spheres_tail;
 
             // Free allocated memory
             Vector3D_destroy(ray_direction);
             Vector3D_destroy(ray_origin);
-
-            // TODO this must update for every object iff lesser t, keep that in mind
-            if (t_min > 1) { //TODO is this correct?
-                // re-initialize in new colour(s)
-                RGB_init(image_array[i][j], Sphere_getRed(sphere_to_draw), 
-                        Sphere_getGreen(sphere_to_draw), Sphere_getBlue(sphere_to_draw));
-            }
         }
 
     }
 
-    //Destroy list  as it's now unused
+    // Destroy list  as it's now unused
     SpheresNode_destroyAllFollowing(spheres_tail);
-
+    Vector3D_destroy(light_centre);    
+    
     if (PPM_save(image_array, argv[1], height, width)) {
         printf("\nDone writing the file. Bye.\n========================\n\n");
     } else {
