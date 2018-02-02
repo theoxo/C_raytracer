@@ -4,18 +4,9 @@
  * 27/01/18
  */
 
-#ifndef STDIO_H
-#define STDIO_H
 #include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
 #include <stdlib.h>
-#endif
-#ifndef VECTOR3D_H
-#define VECTOR3D_H
 #include "Vector3D.h"
-#endif
 
 struct Sphere {
     double radius;

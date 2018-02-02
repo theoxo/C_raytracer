@@ -1,47 +1,14 @@
-#ifndef STDIO_H
-#define STDIO_H
 #include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
 #include <stdlib.h>
-#endif
-#ifndef MATH_H
-#define MATH_H
 #include <math.h>
-#endif
-#ifndef QUADRATICSOLUTION_H
-#define QUADRATICSOLUTION_H
-#include "QuadraticSolution.h"
-#endif
-#ifndef SPHERE_H
-#define SPHERE_H
-#include "Sphere.h"
-#endif
-#ifndef SPHERESNODE_H
-#define SPHERESNODE_H
-#include "SpheresNode.h"
-#endif
-#ifndef LIGHTPHYSICS_H
-#define LIGHTPHYSICS_H
-#include "LightPhysics.h"
-#endif
-#ifndef RGB_H
-#define RGB_H
-#include "RGB.h"
-#endif
-#ifndef PPM_H
-#define PPM_H
-#include "PPM.h"
-#endif
-#ifndef VECTOR3D_H
-#define VECTOR3D_H
-#include "Vector3D.h"
-#endif
-#ifndef LIMITS_H
-#define LIMITS_H
 #include <limits.h>
-#endif
+#include "QuadraticSolution.h"
+#include "Sphere.h"
+#include "SpheresNode.h"
+#include "LightPhysics.h"
+#include "RGB.h"
+#include "PPM.h"
+#include "Vector3D.h"
 
 int main(int argc, char* argv[]) {
 

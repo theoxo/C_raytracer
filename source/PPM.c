@@ -1,15 +1,6 @@
-#ifndef STDIO_H
-#define STDIO_H
 #include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
 #include <stdlib.h>
-#endif
-#ifndef RGB_H
-#define RGB_H
 #include "RGB.h"
-#endif
 
 // NB: DESTROYS supplied pixel_array
 int PPM_save(RGB*** pixel_array, char* file_name, unsigned int height, unsigned int width) {

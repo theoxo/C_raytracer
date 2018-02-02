@@ -9,30 +9,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#ifndef STDIO_H
-#define STDIO_H
-#include <stdio.h>
-#endif
-#ifndef STDLIB_H
-#define STDLIB_H
-#include <stdlib.h>
-#endif
-#ifndef MATH_H
-#define MATH_H
-#include <math.h>
-#endif
-#ifndef QUADRATICSOLUTION_H
-#define QUADRATICSOLUTION_H
-#include "QuadraticSolution.h"
-#endif
-#ifndef SPHERE_H
-#define SPHERE_H
-#include "Sphere.h"
-#endif
-#ifndef VECTOR3D_H
-#define VECTOR3D_H
-#include "Vector3D.h"
-#endif
 
 // Calculates the reflected vector based on the incident vector and the surface normal
 Vector3D* LightPhysics_reflection(Vector3D* incident, Vector3D* surface_normal) {
