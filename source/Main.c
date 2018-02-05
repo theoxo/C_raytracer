@@ -54,8 +54,12 @@ int main(int argc, char* argv[]) {
     SpheresNode_add(sphere2);
     SpheresNode* spheres_traverser = spheres_tail;
 
+    Vector3D* sphere3_centre = Vector3D_create(0,0,10);
+    Sphere* sphere3 = Sphere_create(sphere3_centre, 6, 0, 0, 150);
+    SpheresNode_add(sphere3);
+
     Vector3D* light_centre = Vector3D_create(0, 1, -1); //free me TODO
-    double light_luminance = 10;
+    double light_luminance = 50;
 
     /*
      * Dimensions of image in space = 2x2, centered at the <0, 0, 1>
@@ -113,29 +117,68 @@ int main(int argc, char* argv[]) {
 
             if (t_min > 1) { 
                 Vector3D* intersection_point = Vector3D_multiply(ray_direction, t_min);
-                Vector3D* surface_normal = Vector3D_difference(intersection_point, Sphere_getCentre(sphere_to_draw));
+                Vector3D* surface_normal = Vector3D_difference(intersection_point, 
+                                            Sphere_getCentre(sphere_to_draw));
                 Vector3D* intersection_to_light = Vector3D_difference(light_centre, intersection_point);
 
-                // cos(Theta) = a.b / (|a|*|b|)
-                double cos = Vector3D_dot(surface_normal, intersection_to_light)
-                                    / (Vector3D_magnitude(surface_normal) * Vector3D_magnitude(intersection_to_light));
-                cos = fmax(cos, 0);
+                spheres_traverser = spheres_tail;
+                
+                unsigned int shadowed = 0;
 
-                double energy = light_luminance * cos / pow(Vector3D_magnitude(intersection_to_light), 1.5);
-                double red = Sphere_getRed(sphere_to_draw) * energy;
-                if (red > 255) {red = 255;}
-                double green = Sphere_getGreen(sphere_to_draw) * energy;
-                if (green > 255) {green = 255;}
-                double blue = Sphere_getBlue(sphere_to_draw) * energy;
-                if (blue > 255) {blue = 255;}
+                while (spheres_traverser != NULL) {
+                    Sphere* sphere = SpheresNode_getSphere(spheres_traverser);
 
-                // re-initialize in new colour(s)
-                RGB_init(image_array[i][j], red, green, blue);
+                    if (sphere != sphere_to_draw) {
+                        // check if lies between light and intersection
+                        QuadraticSolution* quadratic_solution = 
+                            LightPhysics_ray_sphere_intersection(
+                                    sphere, intersection_point, intersection_to_light
+                                    );
 
-                // Free allocated memory
-                Vector3D_destroy(intersection_point);
-                Vector3D_destroy(surface_normal);
-                Vector3D_destroy(intersection_to_light);
+                        if (fmax(QuadraticSolution_getPositive(quadratic_solution),
+                                QuadraticSolution_getNegative(quadratic_solution)
+                              ) > 0) {
+                            shadowed = 1;
+                        }
+
+                        QuadraticSolution_destroy(quadratic_solution);
+
+                        if (shadowed == 1) {
+                            break;
+                        }
+                    }
+
+                    spheres_traverser = SpheresNode_getNext(spheres_traverser);
+                }
+
+                double red = 0;
+                double green = 0;
+                double blue = 0;
+
+                if (shadowed == 0) {
+                    // cos(Theta) = a.b / (|a|*|b|)
+                    double cos = Vector3D_dot(surface_normal, intersection_to_light)
+                                        / (Vector3D_magnitude(surface_normal) 
+                                                * Vector3D_magnitude(intersection_to_light));
+                    cos = fmax(cos, 0);
+
+                    double energy = light_luminance * cos 
+                                        / pow(Vector3D_magnitude(intersection_to_light), 1.5);
+                    red = Sphere_getRed(sphere_to_draw) * energy;
+                    if (red > 255) {red = 255;}
+                    green = Sphere_getGreen(sphere_to_draw) * energy;
+                    if (green > 255) {green = 255;}
+                    blue = Sphere_getBlue(sphere_to_draw) * energy;
+                    if (blue > 255) {blue = 255;}
+
+                    // re-initialize in new colour(s)
+                    RGB_init(image_array[i][j], red, green, blue);
+
+                    // Free allocated memory
+                    Vector3D_destroy(intersection_point);
+                    Vector3D_destroy(surface_normal);
+                    Vector3D_destroy(intersection_to_light);
+                }
             }
 
             spheres_traverser = spheres_tail;
