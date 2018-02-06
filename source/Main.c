@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     SpheresNode_add(sphere3);
 
     Vector3D* light_centre = Vector3D_create(0, 1, -1); //free me TODO
-    double light_luminance = 10;
+    double light_luminance = 5;
 
     /*
      * Dimensions of image in space = 2x2, centered at the <0, 0, 1>
