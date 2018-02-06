@@ -19,8 +19,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\n========================\nWelcome. Beginning raytracing.\n\n\n");
 
-    unsigned int width = 1024;
-    unsigned int height = 1024;
+    unsigned int width = 2048;
+    unsigned int height = 2048;
 
     // Note 2D-array, third pointer is to actual RGB itself
     RGB*** image_array = (RGB***) malloc(sizeof(RGB**) * height);
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     SpheresNode_add(sphere3);
 
     Vector3D* light_centre = Vector3D_create(0, 1, -1); //free me TODO
-    double light_luminance = 50;
+    double light_luminance = 10;
 
     /*
      * Dimensions of image in space = 2x2, centered at the <0, 0, 1>
