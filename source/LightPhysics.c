@@ -86,8 +86,6 @@ QuadraticSolution* LightPhysics_ray_sphere_intersection(Sphere* sphere, Vector3D
     double pos = 0;
     double neg = 0;
     if (in_sqrt >= 0) {
-        // Non-real solution.
-        // Returning 0,0 is good enough for our purposes
         pos = ( -b + sqrt(pow(b,2) - 4*a*c) ) / (2*a);
         neg = ( -b - sqrt(pow(b,2) - 4*a*c) ) / (2*a);
     } else {
