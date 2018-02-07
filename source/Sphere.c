@@ -54,7 +54,7 @@ void Sphere_destroy(struct Sphere* self) {
     }
 }
 
-Vector3D* Sphere_getCentre(struct Sphere* self) {
+Vector3D* Sphere_getCentre(const struct Sphere* self) {
     if (self != NULL) {
         return self->centre;
     }
@@ -63,7 +63,7 @@ Vector3D* Sphere_getCentre(struct Sphere* self) {
     return NULL;
 }
 
-double Sphere_getRadius(struct Sphere* self) {
+double Sphere_getRadius(const struct Sphere* self) {
     if (self != NULL) {
         return self->radius;
     }
@@ -72,7 +72,7 @@ double Sphere_getRadius(struct Sphere* self) {
     return -1;
 }
 
-unsigned int Sphere_getRed(struct Sphere* self) {
+unsigned int Sphere_getRed(const struct Sphere* self) {
     if (self != NULL) {
         return self->red;
     }
@@ -81,7 +81,7 @@ unsigned int Sphere_getRed(struct Sphere* self) {
     return 0;
 }
 
-unsigned int Sphere_getGreen(struct Sphere* self) {
+unsigned int Sphere_getGreen(const struct Sphere* self) {
     if (self != NULL) {
         return self->green;
     }
@@ -90,7 +90,7 @@ unsigned int Sphere_getGreen(struct Sphere* self) {
     return 0;
 }
 
-unsigned int Sphere_getBlue(struct Sphere* self) {
+unsigned int Sphere_getBlue(const struct Sphere* self) {
     if (self != NULL) {
         return self->blue;
     }

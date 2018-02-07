@@ -38,7 +38,7 @@ struct SpheresNode* SpheresNode_create(Sphere* sphere) {
     return node;
 }
 
-Sphere* SpheresNode_getSphere(struct SpheresNode* node) {
+Sphere* SpheresNode_getSphere(const struct SpheresNode* node) {
     if (node != NULL) {
         return node->sphere;
     }
@@ -86,7 +86,7 @@ struct SpheresNode* SpheresNode_getTail(){
     return tail;
 }
 
-struct SpheresNode* SpheresNode_getNext(struct SpheresNode* node) {
+struct SpheresNode* SpheresNode_getNext(const struct SpheresNode* node) {
     if (node != NULL) {
         return node->next;
     }

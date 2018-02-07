@@ -8,9 +8,9 @@
 #include "Sphere.h"
 typedef struct SpheresNode SpheresNode;
 SpheresNode* SpheresNode_newList(Sphere* sphere);
-Sphere* SpheresNode_getSphere(SpheresNode* node);
+Sphere* SpheresNode_getSphere(const SpheresNode* node);
 void SpheresNode_destroyAllFollowing(SpheresNode* node);
 void SpheresNode_add(Sphere* sphere);
 SpheresNode* SpheresNode_getTail();
-SpheresNode* SpheresNode_getNext();
+SpheresNode* SpheresNode_getNext(const struct SpheresNode* node);
 #endif

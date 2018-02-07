@@ -19,8 +19,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\n========================\nWelcome. Beginning raytracing.\n\n\n");
 
-    unsigned int width = 2048;
-    unsigned int height = 2048;
+    unsigned int width = 1024;
+    unsigned int height = 1024;
 
     // Note 2D-array, third pointer is to actual RGB itself
     RGB*** image_array = (RGB***) malloc(sizeof(RGB**) * height);
@@ -46,19 +46,23 @@ int main(int argc, char* argv[]) {
      * INITILIAZE OBJECTS IN IMAGE
      */
     Vector3D sphere1_centre;
-    Sphere* sphere1 = Sphere_create(sphere1_centre, 0.5, 150, 0, 0);
+    Vector3D_init(&sphere1_centre, 1, 2, 2);
+    Sphere* sphere1 = Sphere_create(&sphere1_centre, 0.5, 150, 0, 0);
 
-    Vector3D* sphere2_centre = Vector3D_create(-1, 1, 3);
-    Sphere* sphere2 = Sphere_create(sphere2_centre, 1, 0, 150, 0);
+    Vector3D sphere2_centre;
+    Vector3D_init(&sphere2_centre, -1, 1, 3);
+    Sphere* sphere2 = Sphere_create(&sphere2_centre, 1, 0, 150, 0);
     SpheresNode* spheres_tail = SpheresNode_newList(sphere1);
     SpheresNode_add(sphere2);
     SpheresNode* spheres_traverser = spheres_tail;
 
-    Vector3D* sphere3_centre = Vector3D_create(0,0,10);
-    Sphere* sphere3 = Sphere_create(sphere3_centre, 6, 0, 0, 150);
+    Vector3D sphere3_centre; 
+    Vector3D_init(&sphere3_centre, 0, 0, 10);
+    Sphere* sphere3 = Sphere_create(&sphere3_centre, 6, 0, 0, 150);
     SpheresNode_add(sphere3);
 
-    Vector3D* light_centre = Vector3D_create(0, 1, -1); //free me TODO
+    Vector3D light_centre;
+    Vector3D_init(&light_centre, -1, 1, 0);
     double light_luminance = 5;
 
     /*
@@ -77,10 +81,10 @@ int main(int argc, char* argv[]) {
             double y_coordinate = 1 - 2* ( (double) i / (double) height );
             
             // unit vector for the direction
-            Vector3D* ray_direction = Vector3D_create(x_coordinate, y_coordinate, 1); 
+            Vector3D ray_direction = {x_coordinate, y_coordinate, 1};
             // ^(recall image is parallel to the plane but centered at <0, 0, 1>)
             
-            Vector3D* ray_origin = Vector3D_create(0, 0, 0);
+            Vector3D ray_origin = {0, 0, 0};
 
             double t_min = 0;
             Sphere* sphere_to_draw;
@@ -89,7 +93,7 @@ int main(int argc, char* argv[]) {
 
                 QuadraticSolution* quadratic_solution = 
                     LightPhysics_ray_sphere_intersection(SpheresNode_getSphere(spheres_traverser), 
-                            ray_origin, ray_direction);
+                            &ray_origin, &ray_direction);
 
                 double t = fmin(QuadraticSolution_getPositive(quadratic_solution),
                             QuadraticSolution_getNegative(quadratic_solution)
@@ -116,10 +120,10 @@ int main(int argc, char* argv[]) {
             }
 
             if (t_min > 1) { 
-                Vector3D intersection_point = Vector3D_multiply(ray_direction, t_min);
-                Vector3D surface_normal = Vector3D_difference(&intersection_point, 
+                Vector3D* intersection_point = Vector3D_multiply(&ray_direction, t_min);
+                Vector3D* surface_normal = Vector3D_difference(intersection_point, 
                                             Sphere_getCentre(sphere_to_draw));
-                Vector3D intersection_to_light = Vector3D_difference(light_centre, &intersection_point);
+                Vector3D* intersection_to_light = Vector3D_difference(&light_centre, intersection_point);
 
                 spheres_traverser = spheres_tail;
                 
@@ -132,7 +136,7 @@ int main(int argc, char* argv[]) {
                         // check if lies between light and intersection
                         QuadraticSolution* quadratic_solution = 
                             LightPhysics_ray_sphere_intersection(
-                                    sphere, &intersection_point, &intersection_to_light
+                                    sphere, intersection_point, intersection_to_light
                                     );
 
                         if (fmax(QuadraticSolution_getPositive(quadratic_solution),
@@ -157,13 +161,13 @@ int main(int argc, char* argv[]) {
 
                 if (shadowed == 0) {
                     // cos(Theta) = a.b / (|a|*|b|)
-                    double cos = Vector3D_dot(&surface_normal, &intersection_to_light)
-                                        / (Vector3D_magnitude(&surface_normal) 
-                                                * Vector3D_magnitude(&intersection_to_light));
+                    double cos = Vector3D_dot(surface_normal, intersection_to_light)
+                                        / (Vector3D_magnitude(surface_normal) 
+                                                * Vector3D_magnitude(intersection_to_light));
                     cos = fmax(cos, 0);
 
                     double energy = light_luminance * cos 
-                                        / pow(Vector3D_magnitude(&intersection_to_light), 1.5);
+                                        / pow(Vector3D_magnitude(intersection_to_light), 1.5);
                     red = Sphere_getRed(sphere_to_draw) * energy;
                     if (red > 255) {red = 255;}
                     green = Sphere_getGreen(sphere_to_draw) * energy;

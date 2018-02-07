@@ -68,13 +68,13 @@ Vector3D* LightPhysics_refraction(Vector3D* incident, Vector3D* surface_normal,
 QuadraticSolution* LightPhysics_ray_sphere_intersection(Sphere* sphere, Vector3D* ray_origin, Vector3D* ray_direction) {
 
     
-    Vector3D origin_minus_centre = Vector3D_difference(ray_origin, Sphere_getCentre(sphere));
+    Vector3D* origin_minus_centre = Vector3D_difference(ray_origin, Sphere_getCentre(sphere));
 
     double a = Vector3D_dot(ray_direction, ray_direction);
-    Vector3D ray_direction_times_two = Vector3D_multiply(ray_direction, 2);
+    Vector3D ray_direction_times_two = { ray_direction->x * 2, ray_direction->y * 2, ray_direction->z * 2}; // quick maffs
 
-    double b = Vector3D_dot(&ray_direction_times_two, &origin_minus_centre);
-    double c = Vector3D_dot(&origin_minus_centre, &origin_minus_centre) - pow(Sphere_getRadius(sphere), 2);
+    double b = Vector3D_dot(&ray_direction_times_two, origin_minus_centre);
+    double c = Vector3D_dot(origin_minus_centre, origin_minus_centre) - pow(Sphere_getRadius(sphere), 2);
 
     double in_sqrt = pow(b, 2) - 4*a*c;
     
@@ -88,9 +88,8 @@ QuadraticSolution* LightPhysics_ray_sphere_intersection(Sphere* sphere, Vector3D
         // Returning 0,0 is good enough for our purposes
     }
     
+    free(origin_minus_centre);
     QuadraticSolution* result = QuadraticSolution_create(pos, neg);
-
-
     return result;
 }
 
