@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
     /*
      * INITILIAZE OBJECTS IN IMAGE
      */
-    Vector3D* sphere1_centre = Vector3D_create(0.5, 0, 2);
+    Vector3D sphere1_centre;
     Sphere* sphere1 = Sphere_create(sphere1_centre, 0.5, 150, 0, 0);
 
     Vector3D* sphere2_centre = Vector3D_create(-1, 1, 3);
@@ -112,14 +112,14 @@ int main(int argc, char* argv[]) {
                 spheres_traverser = SpheresNode_getNext(spheres_traverser);
                  
                 // Free allocated memory
-                QuadraticSolution_destroy(quadratic_solution);
+                //QuadraticSolution_destroy(quadratic_solution);
             }
 
             if (t_min > 1) { 
-                Vector3D* intersection_point = Vector3D_multiply(ray_direction, t_min);
-                Vector3D* surface_normal = Vector3D_difference(intersection_point, 
+                Vector3D intersection_point = Vector3D_multiply(ray_direction, t_min);
+                Vector3D surface_normal = Vector3D_difference(&intersection_point, 
                                             Sphere_getCentre(sphere_to_draw));
-                Vector3D* intersection_to_light = Vector3D_difference(light_centre, intersection_point);
+                Vector3D intersection_to_light = Vector3D_difference(light_centre, &intersection_point);
 
                 spheres_traverser = spheres_tail;
                 
@@ -132,7 +132,7 @@ int main(int argc, char* argv[]) {
                         // check if lies between light and intersection
                         QuadraticSolution* quadratic_solution = 
                             LightPhysics_ray_sphere_intersection(
-                                    sphere, intersection_point, intersection_to_light
+                                    sphere, &intersection_point, &intersection_to_light
                                     );
 
                         if (fmax(QuadraticSolution_getPositive(quadratic_solution),
@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
                             shadowed = 1;
                         }
 
-                        QuadraticSolution_destroy(quadratic_solution);
+                        //QuadraticSolution_destroy(quadratic_solution);
 
                         if (shadowed == 1) {
                             break;
@@ -157,13 +157,13 @@ int main(int argc, char* argv[]) {
 
                 if (shadowed == 0) {
                     // cos(Theta) = a.b / (|a|*|b|)
-                    double cos = Vector3D_dot(surface_normal, intersection_to_light)
-                                        / (Vector3D_magnitude(surface_normal) 
-                                                * Vector3D_magnitude(intersection_to_light));
+                    double cos = Vector3D_dot(&surface_normal, &intersection_to_light)
+                                        / (Vector3D_magnitude(&surface_normal) 
+                                                * Vector3D_magnitude(&intersection_to_light));
                     cos = fmax(cos, 0);
 
                     double energy = light_luminance * cos 
-                                        / pow(Vector3D_magnitude(intersection_to_light), 1.5);
+                                        / pow(Vector3D_magnitude(&intersection_to_light), 1.5);
                     red = Sphere_getRed(sphere_to_draw) * energy;
                     if (red > 255) {red = 255;}
                     green = Sphere_getGreen(sphere_to_draw) * energy;
@@ -174,25 +174,21 @@ int main(int argc, char* argv[]) {
                     // re-initialize in new colour(s)
                     RGB_init(image_array[i][j], red, green, blue);
 
-                    // Free allocated memory
-                    Vector3D_destroy(intersection_point);
-                    Vector3D_destroy(surface_normal);
-                    Vector3D_destroy(intersection_to_light);
                 }
             }
 
             spheres_traverser = spheres_tail;
 
             // Free allocated memory
-            Vector3D_destroy(ray_direction);
-            Vector3D_destroy(ray_origin);
+            //Vector3D_destroy(ray_direction);
+            //Vector3D_destroy(ray_origin);
         }
 
     }
 
     // Destroy list  as it's now unused
-    SpheresNode_destroyAllFollowing(spheres_tail);
-    Vector3D_destroy(light_centre);    
+    //SpheresNode_destroyAllFollowing(spheres_tail);
+    //Vector3D_destroy(light_centre);    
     
     if (PPM_save(image_array, argv[1], height, width)) {
         printf("\nDone writing the file. Bye.\n========================\n\n");
