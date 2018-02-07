@@ -9,6 +9,8 @@ main.exe : $(OBJS)
 %.o : source/%.c
 	$(CC) $(CFLAGS) -c $<
 
+debug : CFLAGS += -g -pg
+debug : main.exe
 
 .PHONY : clean
 clean :
