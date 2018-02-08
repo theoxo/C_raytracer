@@ -9,8 +9,23 @@
 #include "RGB.h"
 #include "PPM.h"
 #include "Vector3D.h"
+#include <pthread.h>
+
+typedef struct thread_data_ {
+    int thread_id;
+    unsigned int heightStart, heightEnd, width;
+    RGB*** pixel_array;
+    SpheresNode* spheres_tail;
+    Vector3D light_centre;
+    double light_luminance;
+} thread_data;
+
+void * fillPixelArray(void * thread_data);
 
 int main(int argc, char* argv[]) {
+
+    unsigned int height = 1024;
+    unsigned int width = 1024;
 
     if (argc != 2) {
         printf("Usage: main.exe <name of file to write>\n");
@@ -18,9 +33,6 @@ int main(int argc, char* argv[]) {
     }
 
     printf("\n\n========================\nWelcome. Beginning raytracing.\n\n\n");
-
-    unsigned int width = 1024;
-    unsigned int height = 1024;
 
     // Note 2D-array, third pointer is to actual RGB itself
     RGB*** image_array = (RGB***) malloc(sizeof(RGB**) * height);
@@ -39,9 +51,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // Have now allocated the pixel array that is the image.
-    // Let's fill it up.
-
     /*
      * INITILIAZE OBJECTS IN IMAGE
      */
@@ -54,7 +63,6 @@ int main(int argc, char* argv[]) {
     Sphere* sphere2 = Sphere_create(&sphere2_centre, 1, 0, 150, 0);
     SpheresNode* spheres_tail = SpheresNode_newList(sphere1);
     SpheresNode_add(sphere2);
-    SpheresNode* spheres_traverser = spheres_tail;
 
     Vector3D sphere3_centre; 
     Vector3D_init(&sphere3_centre, 0, 0, 10);
@@ -65,10 +73,71 @@ int main(int argc, char* argv[]) {
     Vector3D_init(&light_centre, -1, 1, 0);
     double light_luminance = 5;
 
+    // Have now allocated the pixel array that is the image.
+    // Let's fill it up.
+    pthread_t threads[4];
+    thread_data thread_data_array[4];
+    int rc;
+    for (unsigned int i = 0; i < 4; i++) {
+        thread_data_array[i].thread_id = i;
+        thread_data_array[i].heightStart = i*256;
+        thread_data_array[i].heightEnd = (i+1)*256;
+        thread_data_array[i].width = width;
+        thread_data_array[i].pixel_array = image_array;
+        thread_data_array[i].spheres_tail = spheres_tail;
+        thread_data_array[i].light_centre = light_centre;
+        thread_data_array[i].light_luminance = light_luminance;
+
+        rc = pthread_create(&threads[i], NULL, fillPixelArray, (void *) &(thread_data_array[i]));
+        if (rc) {
+            printf("Error; thread return code is %d\n", rc);
+            exit(1);
+        }
+    }
+
+    /*
+     * ---------------------------
+     * magic silently happens in parallell
+     * ---------------------------
+     */
+    void *status;
+    for (unsigned int t = 0; t < 2; t++) {
+        rc = pthread_join(threads[t], &status);
+        if (rc) {
+            printf("Error; thread return code from pthread_join is %d\n", rc);
+            exit(-1);
+        }
+    }
+
+    // Destroy list  as it's now unused
+    //SpheresNode_destroyAllFollowing(spheres_tail);
+    //Vector3D_destroy(light_centre);    
+    
+    if (PPM_save(image_array, argv[1], height, width)) {
+        printf("\nDone writing the file. Bye.\n========================\n\n");
+    } else {
+        printf("\nError writing file; see error trace.\n========================\n\n");
+    }
+    
+    pthread_exit(NULL);
+}
+
+void *fillPixelArray(void *threadarg) {
+
+    thread_data *mydata = (thread_data *) threadarg;
+    unsigned int heightStart = mydata->heightStart;
+    unsigned int heightEnd = mydata->heightEnd;
+    unsigned int width = mydata->width;
+    RGB*** image_array = mydata->pixel_array;
+    SpheresNode* spheres_tail = mydata->spheres_tail;
+    Vector3D light_centre = mydata->light_centre;
+    double light_luminance = mydata->light_luminance;
+
+    SpheresNode* spheres_traverser = spheres_tail;
     /*
      * Dimensions of image in space = 2x2, centered at the <0, 0, 1>
      */
-    for (unsigned int i = 0; i < height; i++) {
+    for (unsigned int i = heightStart; i < heightEnd; i++) {
         for (unsigned int j = 0; j < width; j++) {
 
             image_array[i][j] =  RGB_create(0, 0, 0);
@@ -78,7 +147,7 @@ int main(int argc, char* argv[]) {
             }
 
             double x_coordinate = -1 + 2* ( (double) j / (double) width );
-            double y_coordinate = 1 - 2* ( (double) i / (double) height );
+            double y_coordinate = 1 - 2* ( (double) i / (double) (1024) ); //fixme TODO shouldn't be hardcoded lol
             
             // unit vector for the direction
             Vector3D ray_direction = {x_coordinate, y_coordinate, 1};
@@ -187,18 +256,6 @@ int main(int argc, char* argv[]) {
             //Vector3D_destroy(ray_direction);
             //Vector3D_destroy(ray_origin);
         }
-
     }
-
-    // Destroy list  as it's now unused
-    //SpheresNode_destroyAllFollowing(spheres_tail);
-    //Vector3D_destroy(light_centre);    
-    
-    if (PPM_save(image_array, argv[1], height, width)) {
-        printf("\nDone writing the file. Bye.\n========================\n\n");
-    } else {
-        printf("\nError writing file; see error trace.\n========================\n\n");
-    }
-    
-    exit(0);
+    pthread_exit(NULL);
 }

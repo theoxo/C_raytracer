@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "RGB.h"
 
-struct RGB {
-    unsigned int red;
-    unsigned int green;
-    unsigned int blue;
-};
 
 void RGB_init(struct RGB* self, unsigned int red, unsigned int green, unsigned int blue) {
     if (self == NULL) {
