@@ -20,7 +20,8 @@ typedef struct thread_data_ {
     double light_luminance;
 } thread_data;
 
-void * fillPixelArray(void * thread_data);
+void * threadFillPixelArray(void * thread_data);
+void localFillPixelArray(void * thread_data);
 
 int main(int argc, char* argv[]) {
 
@@ -32,7 +33,7 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    printf("\n\n========================\nWelcome. Beginning raytracing.\n\n\n");
+    //printf("\n\n========================\nWelcome. Beginning raytracing.\n\n\n");
 
     // Note 2D-array, third pointer is to actual RGB itself
     RGB*** image_array = (RGB***) malloc(sizeof(RGB**) * height);
@@ -75,7 +76,7 @@ int main(int argc, char* argv[]) {
 
     // Have now allocated the pixel array that is the image.
     // Let's fill it up.
-    pthread_t threads[4];
+    pthread_t threads[3];
     thread_data thread_data_array[4];
     int rc;
     for (unsigned int i = 0; i < 4; i++) {
@@ -88,12 +89,17 @@ int main(int argc, char* argv[]) {
         thread_data_array[i].light_centre = light_centre;
         thread_data_array[i].light_luminance = light_luminance;
 
-        rc = pthread_create(&threads[i], NULL, fillPixelArray, (void *) &(thread_data_array[i]));
-        if (rc) {
-            printf("Error; thread return code is %d\n", rc);
-            exit(1);
-        }
+        if (i != 3) { //want to run last "thread" here in main
+            rc = pthread_create(&threads[i], NULL, threadFillPixelArray, (void *) &thread_data_array[i]);
+            if (rc) {
+                printf("Error; thread return code is %d\n", rc);
+                exit(1);
+            }
+       }
     }
+
+    // run 4th "thread"/segment here
+    threadFillPixelArray( (void *) &thread_data_array[3]);
 
     /*
      * ---------------------------
@@ -101,7 +107,7 @@ int main(int argc, char* argv[]) {
      * ---------------------------
      */
     void *status;
-    for (unsigned int t = 0; t < 2; t++) {
+    for (unsigned int t = 0; t < 3; t++) {
         rc = pthread_join(threads[t], &status);
         if (rc) {
             printf("Error; thread return code from pthread_join is %d\n", rc);
@@ -114,17 +120,19 @@ int main(int argc, char* argv[]) {
     //Vector3D_destroy(light_centre);    
     
     if (PPM_save(image_array, argv[1], height, width)) {
-        printf("\nDone writing the file. Bye.\n========================\n\n");
+        //printf("\nDone writing the file. Bye.\n========================\n\n");
     } else {
         printf("\nError writing file; see error trace.\n========================\n\n");
     }
     
-    pthread_exit(NULL);
+    exit(0);
 }
 
-void *fillPixelArray(void *threadarg) {
+void *threadFillPixelArray(void *threadarg) {
 
     thread_data *mydata = (thread_data *) threadarg;
+    int thread_id = mydata->thread_id;
+    //printf("Thread %d started\n", thread_id);
     unsigned int heightStart = mydata->heightStart;
     unsigned int heightEnd = mydata->heightEnd;
     unsigned int width = mydata->width;
@@ -257,5 +265,146 @@ void *fillPixelArray(void *threadarg) {
             //Vector3D_destroy(ray_origin);
         }
     }
-    pthread_exit(NULL);
+    //printf("Thread %d finished.\n", thread_id);
+    //pthread_exit(NULL); -- not needed if we join?
+}
+
+void localFillPixelArray(void *argStruct) {
+
+    thread_data *mydata = (thread_data *) argStruct;
+    int thread_id = mydata->thread_id;
+    //printf("Thread %d started\n", thread_id);
+    unsigned int heightStart = mydata->heightStart;
+    unsigned int heightEnd = mydata->heightEnd;
+    unsigned int width = mydata->width;
+    RGB*** image_array = mydata->pixel_array;
+    SpheresNode* spheres_tail = mydata->spheres_tail;
+    Vector3D light_centre = mydata->light_centre;
+    double light_luminance = mydata->light_luminance;
+
+    SpheresNode* spheres_traverser = spheres_tail;
+    /*
+     * Dimensions of image in space = 2x2, centered at the <0, 0, 1>
+     */
+    for (unsigned int i = heightStart; i < heightEnd; i++) {
+        for (unsigned int j = 0; j < width; j++) {
+
+            image_array[i][j] =  RGB_create(0, 0, 0);
+            if (image_array[i][j] == NULL) {
+                printf("image_array[%u][%u] null pointer error. Out of memory?\n", i, j);
+                exit(1);
+            }
+
+            double x_coordinate = -1 + 2* ( (double) j / (double) width );
+            double y_coordinate = 1 - 2* ( (double) i / (double) (1024) ); //fixme TODO shouldn't be hardcoded lol
+            
+            // unit vector for the direction
+            Vector3D ray_direction = {x_coordinate, y_coordinate, 1};
+            // ^(recall image is parallel to the plane but centered at <0, 0, 1>)
+            
+            Vector3D ray_origin = {0, 0, 0};
+
+            double t_min = 0;
+            Sphere* sphere_to_draw;
+
+            while (spheres_traverser != NULL) {
+
+                QuadraticSolution* quadratic_solution = 
+                    LightPhysics_ray_sphere_intersection(SpheresNode_getSphere(spheres_traverser), 
+                            &ray_origin, &ray_direction);
+
+                double t = fmin(QuadraticSolution_getPositive(quadratic_solution),
+                            QuadraticSolution_getNegative(quadratic_solution)
+                            );
+                
+                if (t <= 1) {
+                   // try the other intersection
+                    t = fmax(QuadraticSolution_getPositive(quadratic_solution),
+                            QuadraticSolution_getNegative(quadratic_solution)
+                            );
+                }
+
+
+                // update t_min if current t is closer to the camera (/origin)
+                if ( (t > 1 && t < t_min) || t_min == 0 ) {
+                    t_min = t;
+                    sphere_to_draw = SpheresNode_getSphere(spheres_traverser);
+                }
+
+                spheres_traverser = SpheresNode_getNext(spheres_traverser);
+                 
+                // Free allocated memory
+                //QuadraticSolution_destroy(quadratic_solution);
+            }
+
+            if (t_min > 1) { 
+                Vector3D* intersection_point = Vector3D_multiply(&ray_direction, t_min);
+                Vector3D* surface_normal = Vector3D_difference(intersection_point, 
+                                            Sphere_getCentre(sphere_to_draw));
+                Vector3D* intersection_to_light = Vector3D_difference(&light_centre, intersection_point);
+
+                spheres_traverser = spheres_tail;
+                
+                unsigned int shadowed = 0;
+
+                while (spheres_traverser != NULL) {
+                    Sphere* sphere = SpheresNode_getSphere(spheres_traverser);
+
+                    if (sphere != sphere_to_draw) {
+                        // check if lies between light and intersection
+                        QuadraticSolution* quadratic_solution = 
+                            LightPhysics_ray_sphere_intersection(
+                                    sphere, intersection_point, intersection_to_light
+                                    );
+
+                        if (fmax(QuadraticSolution_getPositive(quadratic_solution),
+                                QuadraticSolution_getNegative(quadratic_solution)
+                              ) > 0) {
+                            shadowed = 1;
+                        }
+
+                        //QuadraticSolution_destroy(quadratic_solution);
+
+                        if (shadowed == 1) {
+                            break;
+                        }
+                    }
+
+                    spheres_traverser = SpheresNode_getNext(spheres_traverser);
+                }
+
+                double red = 0;
+                double green = 0;
+                double blue = 0;
+
+                if (shadowed == 0) {
+                    // cos(Theta) = a.b / (|a|*|b|)
+                    double cos = Vector3D_dot(surface_normal, intersection_to_light)
+                                        / (Vector3D_magnitude(surface_normal) 
+                                                * Vector3D_magnitude(intersection_to_light));
+                    cos = fmax(cos, 0);
+
+                    double energy = light_luminance * cos 
+                                        / pow(Vector3D_magnitude(intersection_to_light), 1.5);
+                    red = Sphere_getRed(sphere_to_draw) * energy;
+                    if (red > 255) {red = 255;}
+                    green = Sphere_getGreen(sphere_to_draw) * energy;
+                    if (green > 255) {green = 255;}
+                    blue = Sphere_getBlue(sphere_to_draw) * energy;
+                    if (blue > 255) {blue = 255;}
+
+                    // re-initialize in new colour(s)
+                    RGB_init(image_array[i][j], red, green, blue);
+
+                }
+            }
+
+            spheres_traverser = spheres_tail;
+
+            // Free allocated memory
+            //Vector3D_destroy(ray_direction);
+            //Vector3D_destroy(ray_origin);
+        }
+    }
+    //printf("Thread %d finished. LOCALLY\n", thread_id);
 }
