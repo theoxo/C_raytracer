@@ -71,15 +71,10 @@ QuadraticSolution* LightPhysics_ray_sphere_intersection(Sphere* sphere, Vector3D
     Vector3D* origin_minus_centre = Vector3D_difference(ray_origin, Sphere_getCentre(sphere));
 
     double a = Vector3D_dot(ray_direction, ray_direction);
-    Vector3D* ray_direction_times_two = Vector3D_multiply(ray_direction, 2);
-    
-    if (ray_direction_times_two == NULL) {
-        printf("LightPhysics_ray_sphere_intersection: result of Vector3D_multiply is null.");
-    }
+    Vector3D ray_direction_times_two = { ray_direction->x * 2, ray_direction->y * 2, ray_direction->z * 2}; // quick maffs
 
-    double b = Vector3D_dot(ray_direction_times_two, origin_minus_centre);
+    double b = Vector3D_dot(&ray_direction_times_two, origin_minus_centre);
     double c = Vector3D_dot(origin_minus_centre, origin_minus_centre) - pow(Sphere_getRadius(sphere), 2);
-    Vector3D_destroy(ray_direction_times_two);
 
     double in_sqrt = pow(b, 2) - 4*a*c;
     
@@ -93,10 +88,8 @@ QuadraticSolution* LightPhysics_ray_sphere_intersection(Sphere* sphere, Vector3D
         // Returning 0,0 is good enough for our purposes
     }
     
+    free(origin_minus_centre);
     QuadraticSolution* result = QuadraticSolution_create(pos, neg);
-
-    Vector3D_destroy(origin_minus_centre);
-
     return result;
 }
 

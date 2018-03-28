@@ -42,7 +42,7 @@ void QuadraticSolution_destroy(struct QuadraticSolution* self) {
     }
 }
 
-double QuadraticSolution_getPositive(struct QuadraticSolution* qs) {
+double QuadraticSolution_getPositive(const struct QuadraticSolution* qs) {
     if (qs == NULL) {
         printf("QuadraticSolution_getPositive: null pointer as parameter.\n");
         return -1;
@@ -51,7 +51,7 @@ double QuadraticSolution_getPositive(struct QuadraticSolution* qs) {
     return qs->positive;
 }
 
-double QuadraticSolution_getNegative(struct QuadraticSolution* qs) {
+double QuadraticSolution_getNegative(const struct QuadraticSolution* qs) {
     if (qs == NULL) {
         printf("QuadraticSolution_getNegative: null pointer as parameter.\n");
         return -1;

@@ -5,3 +5,5 @@ thumbs.db
 *.exe
 *.ppm
 *.png
+prof*
+gmon.out

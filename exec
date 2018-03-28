@@ -1,4 +1,8 @@
 #!/bin/bash
 
-./main.exe image.ppm && convert image.ppm image.png && rm image.ppm
+TIMEFORMAT='It took %2R seconds to perform ray tracing'
+time {
+    ./main.exe image.ppm 
+}
+convert image.ppm image.png && rm image.ppm
 

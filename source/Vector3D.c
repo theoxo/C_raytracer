@@ -7,12 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-struct Vector3D {
-    double x;
-    double y;
-    double z;
-};
+#include "Vector3D.h"
 
 // Initiliaze values but do not allocate memory
 void Vector3D_init(struct Vector3D* self, double x, double y, double z) {
@@ -45,7 +40,7 @@ void Vector3D_destroy(struct Vector3D* self) {
     }
 }
 
-double Vector3D_getX(struct Vector3D* self) {
+double Vector3D_getX(const struct Vector3D* self) {
     if (self != NULL) {
         return self->x;
     }
@@ -54,7 +49,7 @@ double Vector3D_getX(struct Vector3D* self) {
     return -1;
 }
 
-double Vector3D_getY(struct Vector3D* self) {
+double Vector3D_getY(const struct Vector3D* self) {
     if (self != NULL) {
         return self->y;
     }
@@ -63,7 +58,7 @@ double Vector3D_getY(struct Vector3D* self) {
     return -1;
 }
 
-double Vector3D_getZ(struct Vector3D* self) {
+double Vector3D_getZ(const struct Vector3D* self) {
     if (self != NULL) {
         return self->z;
     }
@@ -73,7 +68,7 @@ double Vector3D_getZ(struct Vector3D* self) {
 }
 
 // Calculates dot product of vectors a and b
-double Vector3D_dot(struct Vector3D* a, struct Vector3D* b) {
+double Vector3D_dot(const struct Vector3D* a, const struct Vector3D* b) {
     if (a == NULL || b == NULL) {
         printf("Vector3D_dot:  null reference to parameter.\n");
         return -1;
@@ -87,12 +82,12 @@ double Vector3D_dot(struct Vector3D* a, struct Vector3D* b) {
 }
 
 // Calculates the magnitude of the given vector
-double Vector3D_magnitude(struct Vector3D* self) {
+double Vector3D_magnitude(const struct Vector3D* self) {
     return sqrt(Vector3D_dot(self, self));
 }
 
 // Calculates a-b
-struct Vector3D* Vector3D_difference(struct Vector3D* a, struct Vector3D* b) {
+struct Vector3D* Vector3D_difference(const struct Vector3D* a, const struct Vector3D* b) {
     double x = Vector3D_getX(a) - Vector3D_getX(b);
     double y = Vector3D_getY(a) - Vector3D_getY(b);
     double z = Vector3D_getZ(a) - Vector3D_getZ(b);
@@ -102,7 +97,7 @@ struct Vector3D* Vector3D_difference(struct Vector3D* a, struct Vector3D* b) {
 }
 
 // Returns vec*factor
-struct Vector3D* Vector3D_multiply(struct Vector3D* vec, double factor) {
+struct Vector3D* Vector3D_multiply(const struct Vector3D* vec, double factor) {
     double x = Vector3D_getX(vec) * factor;
     double y = Vector3D_getY(vec) * factor;
     double z = Vector3D_getZ(vec) * factor;

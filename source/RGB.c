@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "RGB.h"
 
-struct RGB {
-    unsigned int red;
-    unsigned int green;
-    unsigned int blue;
-};
 
 void RGB_init(struct RGB* self, unsigned int red, unsigned int green, unsigned int blue) {
     if (self == NULL) {
@@ -36,7 +32,7 @@ void RGB_destroy(struct RGB* self) {
     }
 }
 
-unsigned int RGB_getRed(struct RGB* self) {
+unsigned int RGB_getRed(const struct RGB* self) {
     if (self == NULL) {
         printf("RGB_getRed: supplied self is null.\n");
         return 0;
@@ -44,7 +40,7 @@ unsigned int RGB_getRed(struct RGB* self) {
     return self->red;
 }
 
-unsigned int RGB_getGreen(struct RGB* self) {
+unsigned int RGB_getGreen(const struct RGB* self) {
     if (self == NULL) {
         printf("RGB_getGreen: supplied self is null.\n");
         return 0;
@@ -52,7 +48,7 @@ unsigned int RGB_getGreen(struct RGB* self) {
     return self->green;
 }
 
-unsigned int RGB_getBlue(struct RGB* self) {
+unsigned int RGB_getBlue(const struct RGB* self) {
     if (self == NULL) {
         printf("RGB_getBlue: supplied self is null.\n");
         return 0;
@@ -60,7 +56,7 @@ unsigned int RGB_getBlue(struct RGB* self) {
     return self->blue;
 }
 
-struct RGB* RGB_copy(struct RGB* source) {
+struct RGB* RGB_copy(const struct RGB* source) {
     if (source != NULL) {
         double red = RGB_getRed(source);
         double green = RGB_getGreen(source);
