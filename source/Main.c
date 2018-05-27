@@ -7,7 +7,6 @@
 #include "SpheresNode.h"
 #include "LightPhysics.h"
 #include "RGB.h"
-#include "PPM.h"
 #include "Vector3D.h"
 #include <pthread.h>
 
